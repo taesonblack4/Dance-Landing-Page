@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;  /* Ensures padding and border are included in element's total width/height */
+}
+.app-container{
+  width: 19000px;
+}
+.navbar-container {
+  background-color: black;
+  height: 100px;
+}
+
+.home-section-container {
+  background-color: black;
+  height: 300px;
+}
+
+.services-section-container {
+  background-color: blueviolet;
+  height: 300px;
+
+}
+
+.about-section-container {
+  background-color: aqua;
+  height: 300px;
+}
+
+.gallery-section-container {
+  background-color: red;
+  height: 300px;
+}
+
+.contact-section-container {
+  background-color: darkslategrey;
+  height: 300px;
+  overflow: scroll;
+}
+
+.form-container {
+  display: grid;
+  border: 1px red dashed ;
+}
+
+.footer-section-container {
+  background-color: black;
+  height: 300px;
+}
+
+
+
+label {
+  font-weight: bold;
+  display: flex;
+}
+
+.Link {
+  text-decoration: none;
+  display: inline-block;        /* Changed to inline-block for proper padding */
+  padding: 20px;
+  font-weight: 700;
+  font-size: large;
+  cursor: pointer;
+}
+
+/* scroll to top button */
+.top-btn-position {
+  position: fixed;
+  bottom: 15px;
+  right: 20px;
+}
+
+.top-btn-style {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: whitesmoke;
+  color: darkgoldenrod;
+  cursor: pointer;
+}
