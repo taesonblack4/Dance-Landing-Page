@@ -4,8 +4,10 @@ const prisma = new PrismaClient;
 
 const app = express();
 app.use(express.json());
+const cors = require('cors');
+app.use(cors());
 
-app.get('/', async (req,res) => {
+app.get('/clients', async (req,res) => {
     const dancers = await prisma.dancer.findMany();
     res.json(dancers);
 })
@@ -18,24 +20,32 @@ app.post('/clients', async (req,res) => {
         technique, 
         message 
     } = req.body;
+
     const dancer = await prisma.dancer.create({
-        data: {name, email, phone, services, technique, message}
+        data: {full_name: name, email, phone_number: phone, services, technique, message}
     });
-    //need a better way to display
+
     res.json(dancer);
 });
 
-app.put('/clients/:id', (req,res) => {
-    //update client
-    //what would be updated in this context?
+app.put('/clients/:id', async (req,res) => {
     const { id } = req.params;
-    const { name} = req.body;
-    res.json(`${id} -- ${name}`);
+    const { email, phone, services, technique} = req.body;
+
+    const dancer = await prisma.dancer.update({
+        where: {id: parseInt(id)},
+        data: {email, phone_number: phone, services, technique}
+    });
+
+    res.json(dancer);
 });
 
-app.delete('/clients/:id', (req,res) => {
+app.delete('/clients/:id', async (req,res) => {
     const { id } = req.params;
-    res.json(`${id} has been deleted`);
+    await prisma.dancer.delete({
+        where: {id: parseInt(id)}
+    });
+    res.json('dancer deleted');
 });
 
 app.listen(4004,()=> {
