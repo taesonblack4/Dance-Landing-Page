@@ -7,12 +7,13 @@ app.use(express.json());
 const cors = require('cors');
 app.use(cors());
 
-app.get('/clients', async (req,res) => {
+//landing page
+app.get('/clients/', async (req,res) => {
     const dancers = await prisma.dancer.findMany();
     res.json(dancers);
 })
 
-app.post('/clients', async (req,res) => {
+app.post('/clients/', async (req,res) => {
     const { name, 
         email, 
         phone, 
@@ -28,19 +29,22 @@ app.post('/clients', async (req,res) => {
     res.json(dancer);
 });
 
-app.put('/clients/:id', async (req,res) => {
+//-------------------------------------------------------------------------------------------------//
+
+//dashboard
+app.put('/admin/clients/:id', async (req,res) => {
     const { id } = req.params;
-    const { email, phone, services, technique} = req.body;
+    const { name ,email, phone, services, technique} = req.body;
 
     const dancer = await prisma.dancer.update({
         where: {id: parseInt(id)},
-        data: {email, phone_number: phone, services, technique}
+        data: {full_name: name,email, phone_number: phone, services, technique}
     });
 
     res.json(dancer);
 });
 
-app.delete('/clients/:id', async (req,res) => {
+app.delete('/admin/clients/:id', async (req,res) => {
     const { id } = req.params;
     await prisma.dancer.delete({
         where: {id: parseInt(id)}

@@ -48,6 +48,10 @@
   height: 300px;
 }
 
+.dashboard-container {
+  height: 500px;
+  background: grey;
+}
 
 
 label {
