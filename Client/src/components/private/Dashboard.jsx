@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 // HTTP client for making API requests
 import axios from 'axios';
 
+//Need to create view that seperates client intake form data from site users 
+//users with have the ability book consultations through site 
+//maybe calendly ??
+
 const Dashboard = () => {
     // API endpoints - ⚠️ Should be moved to environment variables
     const HOST = 'http://localhost:4004/clients/'; // Public client endpoint
@@ -147,7 +151,7 @@ const Dashboard = () => {
 
                                 {/* Services checkbox group */}
                                 <p><strong>Services:</strong></p>
-                                {["Choreography", "Movement Coaching", "Private Coaching","Performances", "Arts Administration"].map(service => (
+                                {["Choreography", "Movement Coaching", "Private Coaching", "Performances", "Arts Administration", "Teaching", "Workshops"].map(service => (
                                     <label key={service}>
                                         <input
                                             type="checkbox"
@@ -161,7 +165,7 @@ const Dashboard = () => {
 
                                 {/* Technique checkbox group */}
                                 <p><strong>Technique:</strong></p>
-                                {["Hip Hop", "Jazz", "Modern", "Ballet"].map(technique => (
+                                {["Hip Hop", "Jazz", "Modern", "Ballet", "Contemporary"].map(technique => (
                                     <label key={technique}>
                                         <input
                                             type="checkbox"

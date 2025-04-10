@@ -13,7 +13,9 @@ import Footer from './components/public/Footer';
 
 // Import private (admin) components
 import Dashboard from './components/private/Dashboard';
-import Login from './components/private/Login';
+import AdminLogin from './components/private/AdminLogin';
+import UserLogin from './components/public/UserLogin';
+import SignUp from './components/public/SignUp';
 
 // Import global styles
 import './styles/App.css';
@@ -23,6 +25,8 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   // State to control login modal visibility
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginMode, setLoginMode] = useState(null); // 'admin', 'userLogin', 'signUp'
+
 
   // Refs for scrolling to different sections
   const servicesRef = useRef(null);
@@ -54,6 +58,12 @@ function App() {
     setIsAdmin(false);
   };
 
+  // Handles successful sign-up
+const handleSignUp = () => {
+  setIsLoggingIn(false);
+};
+
+
   // Main component rendering logic
   return (
     <>
@@ -68,13 +78,29 @@ function App() {
         </>
       ) : isLoggingIn ? (
         // Login form view
-        <Login 
-          onLogin={() => {
-            setIsAdmin(true);
-            setIsLoggingIn(false);
-          }} 
-          onCancel={() => setIsLoggingIn(false)} 
-        />
+        <>
+        {loginMode === 'admin' && (
+          <AdminLogin 
+            onLogin={() => {
+              setIsAdmin(true);
+              setIsLoggingIn(false);
+            }} 
+            onCancel={() => setIsLoggingIn(false)} 
+          />
+        )}
+        {loginMode === 'userLogin' && (
+          <UserLogin 
+            onLogin={() => setIsLoggingIn(false)} 
+            onCancel={() => setIsLoggingIn(false)} 
+          />
+        )}
+        {loginMode === 'signUp' && (
+          <SignUp 
+            onSignUp={handleSignUp} 
+            onCancel={() => setIsLoggingIn(false)} 
+          />
+        )}
+        </>
       ) : (
         // Public-facing website view
         <>
@@ -100,10 +126,34 @@ function App() {
             {/* Admin login trigger */}
             <div className="admin-login-container">
               <button 
-                onClick={() => setIsLoggingIn(true)} 
+                onClick={() => {
+                  setLoginMode('admin');
+                  setIsLoggingIn(true);
+                }} 
                 style={styles.loginButton}
               >
                 Admin Login
+              </button>
+            </div>
+
+            <div className='user-login-container'>
+              <button 
+                onClick={() => {
+                  setLoginMode('userLogin');
+                  setIsLoggingIn(true);
+                }} 
+                style={styles.loginButton}
+              >
+                Login
+              </button>
+              <button 
+                onClick={() => {
+                  setLoginMode('signUp');
+                  setIsLoggingIn(true);
+                }} 
+                style={styles.loginButton}
+              >
+                Sign Up
               </button>
             </div>
           </div>

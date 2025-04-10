@@ -2,71 +2,433 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;  /* Ensures padding and border are included in element's total width/height */
+  width: 100%;
 }
 .app-container{
-  width: 19000px;
+  margin: 0 auto;
 }
+
+/**************************************************************************************************************************/
+
 .navbar-container {
+  background-color: black;
+  height: 100px;
+  display: flex;
+  align-items: center;  /* Centers title and links vertically */
+  justify-content: space-between; /* Pushes elements apart */
+  padding: 0 20px; /* Adds spacing */
+}
+
+.link-container {
+  display: flex;  /* Ensures navigation links align properly */
+  flex: 1; /* Allows this container to expand and push links to the right */
+  justify-content: flex-end; /* Ensures the links stay aligned right */
+}
+
+.link-container ul {
+  display: flex; /* Places links in a row */
+  list-style: none; /* Removes default list styling */
+  padding: 0;
+  margin-left: auto; /* Pushes the links all the way to the right */
+  gap: 20px; /* Spaces out the links */
+  white-space: nowrap;
+}
+
+.Link {
+  cursor: pointer;
+  text-decoration: none;
+  color: goldenrod;
+  font-size: 18px;
+}
+
+.Link:hover {
+  color: white;
+}
+
+/**************************************************************************************************************************/
+
+.home-section-container {
+  background-color: black;
+  height: 500px;
+}
+
+.name-banner {
+  position: relative;
+  top: 50px;
+  left: 20%;
+}
+
+.banner-caption {
+  position: relative;
+  top: 20px;
+}
+
+/**************************************************************************************************************************/
+
+/* Services.css */
+.services-section-container {
+  background-color: #697754;
+  min-height: 300px;
+  padding: 40px 20px;
+}
+
+.services-header {
+  text-align: center;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.service-blocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.service-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  position: relative; /* Needed for absolute positioning of description */
+  text-align: center;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  background-color: goldenrod;
+}
+
+/* Ensures service titles are positioned correctly */
+.service-title {
+  position: relative; /* Needed for absolute tooltip positioning */
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Tooltip bubble (hidden by default) */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50%; /* Centers tooltip */
+  bottom: 100%; /* Moves tooltip above the text */
+  transform: translateX(-50%) translateY(-10px); /* Adjusts positioning */
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Small arrow for tooltip */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Arrow at bottom of tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: black transparent transparent transparent; /* Triangle effect */
+}
+
+/* Show tooltip on hover */
+.service-title:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-15px); /* Moves tooltip slightly upward */
+}
+
+
+/* Show description on hover */
+.service-card:hover .service-description {
+  opacity: 1;
+  max-height: 100px;
+}
+
+
+.card-content h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .service-blocks {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .service-blocks {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/**************************************************************************************************************************/
+
+.about-section-container {
+  background-color: black;
+  height: 300px;
+}
+
+/**************************************************************************************************************************/
+
+.gallery-section-container {
+  position: relative;
+  background-color: black;
+  padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  width: 90%;
+  max-width: 1200px;
+  white-space: nowrap;
+  padding: 10px;
+  position: relative;
+}
+
+.media-row {
+  display: flex;
+  gap: 15px;
+  white-space: nowrap;
+}
+
+.image-block, .vid-block {
+  width: 300px;  /* Adjust size as needed */
+  height: 200px;
+  background-color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: rgb(102, 46, 46);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Scroll Buttons */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 24px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.scroll-btn:hover {
+  background: rgb(241, 39, 39);
+}
+
+.left-btn {
+  left: 10px;
+}
+
+.right-btn {
+  right: 10px;
+}
+
+/* Ensure 3 media items are visible at a time */
+.gallery-wrapper::before,
+.gallery-wrapper::after {
+  content: "";
+  display: block;
+  width: 10px;
+  flex-shrink: 0;
+}
+
+
+/**************************************************************************************************************************/
+
+
+/* Contact Form Styling */
+.contact-section-container {
+  background: #697754;
+  padding: 50px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  background: white;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.form-container h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.form-container p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Update checkbox group styling */
+.checkbox-group {
+  margin-bottom: 20px;
+}
+
+.checkbox-group > label { /* Group header ("Services", "Technique") */
+  display: block;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.checkbox-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Vertical spacing between checkbox items */
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Horizontal space between checkbox and label */
+  width: 100%;
+  padding: 6px 0;
+}
+
+.checkbox-label input {
+  margin: 0;
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
+  width: 18px; /* Fixed checkbox size */
+  height: 18px;
+}
+
+.checkbox-label span { /* If you wrap text in span */
+  word-break: break-word;
+  flex: 1;
+}
+
+/* For long text items */
+.checkbox-label {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: goldenrod;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+label {
+  color: black;
+}
+
+
+/**************************************************************************************************************************/
+
+
+.footer-section-container {
   background-color: black;
   height: 100px;
 }
 
-.home-section-container {
-  background-color: black;
-  height: 300px;
+.instagram-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent; /* No background */
+  border: none;
+  cursor: pointer;
+  text-decoration: none; /* Remove underline */
 }
 
-.services-section-container {
-  background-color: blueviolet;
-  height: 300px;
-
+.instagram-icon {
+  font-size: 40px; /* Adjust size as needed */
+  color: #E4405F; /* Instagram's official color */
+  transition: transform 0.2s ease, color 0.3s ease;
 }
 
-.about-section-container {
-  background-color: aqua;
-  height: 300px;
+.instagram-icon:hover {
+  color: #d13255; /* Slightly darker color on hover */
+  transform: scale(1.1); /* Slight zoom-in effect */
 }
 
-.gallery-section-container {
-  background-color: red;
-  height: 300px;
-}
-
-.contact-section-container {
-  background-color: darkslategrey;
-  height: 300px;
-  overflow: scroll;
-}
-
-.form-container {
-  display: grid;
-  border: 1px red dashed ;
-}
-
-.footer-section-container {
-  background-color: black;
-  height: 300px;
-}
+/**************************************************************************************************************************/
 
 .dashboard-container {
   height: 500px;
   background: grey;
 }
 
+/**************************************************************************************************************************/
 
-label {
-  font-weight: bold;
-  display: flex;
-}
-
-.Link {
-  text-decoration: none;
-  display: inline-block;        /* Changed to inline-block for proper padding */
-  padding: 20px;
-  font-weight: 700;
-  font-size: large;
-  cursor: pointer;
-}
 
 /* scroll to top button */
 .top-btn-position {

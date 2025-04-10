@@ -23,3 +23,15 @@ model Dancer {
   message String
   submitted_at DateTime @default(now())
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  username String
+  password String
+}
+
+model Super {
+  id Int @id @default(autoincrement())
+  username String
+  password String
+}

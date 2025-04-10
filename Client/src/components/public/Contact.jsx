@@ -77,103 +77,75 @@ const ClientForm = () => {
         addDancer(); // Trigger submission
     };
 
-    // Form UI
+    // Form UI with improved styling
     return (
         <div className='form-container'>
+            <h2>Contact Me</h2>
+            <p>Fill out the form below, and I'll get back to you soon.</p>
             <form onSubmit={onSubmit}>
+                
                 {/* Full Name Input */}
-                <label htmlFor="name">Full Name</label>
-                <input 
-                    type='text' 
-                    id='name' 
-                    placeholder='Firstname Lastname' 
-                    value={fullName} 
-                    onChange={(e) => handleInputChange(e, setFullName)}
-                    required // HTML5 validation
-                />
+                <div className="input-group">
+                    <label htmlFor="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Your Name" value={fullName} onChange={(e) => handleInputChange(e, setFullName)} required />
+                </div>
 
                 {/* Email Input */}
-                <label htmlFor="email">Email</label>
-                <input 
-                    type='email' 
-                    id='email' 
-                    placeholder='email@example.com' 
-                    value={email} 
-                    onChange={(e) => handleInputChange(e, setEmail)}
-                    required
-                />
+                <div className="input-group">
+                    <label htmlFor="email">Email</label>
+                    <input type="email" id="email" placeholder="Your Email" value={email} onChange={(e) => handleInputChange(e, setEmail)} required />
+                </div>
 
                 {/* Phone Number Input */}
-                <label htmlFor="cell">Phone Number</label>
-                <input 
-                    type='tel' 
-                    id='cell' 
-                    placeholder='(xxx)-xxx-xxxxx' 
-                    value={phoneNumber} 
-                    onChange={(e) => handleInputChange(e, setPhoneNumber)}
-                    required
-                />
+                <div className="input-group">
+                    <label htmlFor="cell">Phone Number</label>
+                    <input type="tel" id="cell" placeholder="Your Phone Number" value={phoneNumber} onChange={(e) => handleInputChange(e, setPhoneNumber)} required />
+                </div>
 
                 {/* Services Checkbox Group */}
-                <label htmlFor="service-type">Services</label>
-                <div className='service-checkbox-container'>
-                    {[
-                        "Choreography", "Movement Coaching", "Private Coaching", 
-                        "Performances", "Arts Administration", "Dance Education", 
-                        "Other - please specify in message box"
-                    ].map((service, index) => (
-                        <label key={index}>
-                            <input 
-                                type='checkbox' 
-                                value={service}
-                                checked={services.includes(service)}
-                                onChange={(e) => handleCheckboxChange(e, setServices, services)}
-                            />
+                <div className="checkbox-group">
+                    <label>Services</label>
+                    <div className='checkbox-items'>
+                    {["Choreography", "Movement Coaching", "Private Coaching", "Performances", "Arts Administration", "Teaching", "Workshops","Other - specify in message box"].map((service, index) => (
+                        <label key={index} className="checkbox-label">
+                            <input type="checkbox" value={service} checked={services.includes(service)} onChange={(e) => handleCheckboxChange(e, setServices, services)} />
                             {service}
                         </label>
                     ))}
+                    </div>
                 </div>
 
                 {/* Technique Checkbox Group */}
-                <label htmlFor="dance-style">Technique</label>
-                <div className='dance-checkbox-container'>
-                    {["Hip Hop", "Jazz", "Modern", "Ballet"].map((technique, index) => (
-                        <label key={index}>
-                            <input 
-                                type='checkbox' 
-                                value={technique}
-                                checked={techniques.includes(technique)}
-                                onChange={(e) => handleCheckboxChange(e, setTechniques, techniques)}
-                            />
+                <div className="checkbox-group">
+                    <label>Technique</label>
+                    <div className='checkbox-items'>
+                    {["Hip Hop", "Jazz", "Modern", "Ballet", "Contemporary"].map((technique, index) => (
+                        <label key={index} className="checkbox-label">
+                            <input type="checkbox" value={technique} checked={techniques.includes(technique)} onChange={(e) => handleCheckboxChange(e, setTechniques, techniques)} />
                             {technique}
                         </label>
                     ))}
+                    </div>
                 </div>
 
                 {/* Message Textarea */}
-                <label htmlFor="message">Message</label>
-                <textarea 
-                    id='message' 
-                    placeholder='Tell me more about you' 
-                    value={message} 
-                    onChange={(e) => handleInputChange(e, setMessage)}
-                />
+                <div className="input-group">
+                    <label htmlFor="message">Message</label>
+                    <textarea id='message' placeholder='Tell me more about you' value={message} onChange={(e) => handleInputChange(e, setMessage)} />
+                </div>
 
                 {/* Submit Button */}
-                <input type='submit' value="Submit"/>
+                <button type="submit" className="submit-btn">Submit</button>
             </form>
         </div>
     );
 };
 
 // Contact component with forwarded ref for scrolling
-const Contact = React.forwardRef((props, ref) => {
-    return (  
-       <div ref={ref} className='contact-section-container'>
-          <h3>Contact Me</h3>
-          <ClientForm />
-      </div>
-    )
-});
-  
+const Contact = React.forwardRef((props, ref) => (
+    <div ref={ref} className='contact-section-container'>
+        <ClientForm />
+    </div>
+));
+
 export default Contact;

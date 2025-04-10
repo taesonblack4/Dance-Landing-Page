@@ -1,42 +1,42 @@
 // Import React core library and useState hook
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+
 
 // Login component handling admin authentication
-const Login = ({ onLogin }) => {
+const UserLogin = ({ onLogin, onCancel }) => {
+
+    const Login_HOST = 'http://localhost:4004/users/login/';
+
     // State management for form fields and error messages
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // ⚠️ Security Note: Temporary hardcoded credentials - 
-    // Replace with secure server-side authentication in production
-    const ADMIN_CREDENTIALS = {
-        username: "admin",
-        password: "securePass123"  // 🚨 Never store passwords in client-side code
-    };
 
-    // Authentication handler
-    const handleLogin = () => {
-        // Basic credential validation
-        if (username === ADMIN_CREDENTIALS.username && 
-            password === ADMIN_CREDENTIALS.password) {
-            
-            // ⚠️ Security Note: localStorage isn't secure for sensitive data
-            // Consider using HTTP-only cookies for production
-            localStorage.setItem("isAdmin", "true");
-            
-            // Notify parent component of successful login
-            onLogin();
-        } else {
-            // Show error for invalid credentials
-            setError("Invalid username or password.");
+    const handleLogin = async () => {
+        const loginData = {
+            username: username,
+            password: password
+        }
+
+        try {
+            const response = await axios.post(Login_HOST, loginData);
+            if(response) {
+                localStorage.setItem("isAdmin", "true");
+                onLogin();
+            }
+        } catch {
+            setError('invalid username or password');
         }
     };
+
 
     // Login form UI
     return (
         <div style={styles.container}>
-            <h2>Admin Login</h2>
+            <h2>User Login</h2>
             
             {/* Username input field */}
             <input
@@ -62,6 +62,9 @@ const Login = ({ onLogin }) => {
             {/* Login submission button */}
             <button onClick={handleLogin} style={styles.button}>
                 Login
+            </button>
+            <button onClick={onCancel}>
+                Cancel
             </button>
         </div>
     );
@@ -100,4 +103,4 @@ const styles = {
     }
 };
 
-export default Login;
+export default UserLogin;
