@@ -7,7 +7,7 @@ import axios from 'axios';
 // Login component handling admin authentication
 const UserLogin = ({ onLogin, onCancel }) => {
 
-    const Login_HOST = 'http://localhost:4004/users/login/';
+    const Login_HOST = 'http://localhost:4004/authentication/user/login';
 
     // State management for form fields and error messages
     const [username, setUsername] = useState('');
@@ -20,7 +20,7 @@ const UserLogin = ({ onLogin, onCancel }) => {
             username: username,
             password: password
         }
-
+        console.log(loginData);
         try {
             const response = await axios.post(Login_HOST, loginData);
             if(response) {

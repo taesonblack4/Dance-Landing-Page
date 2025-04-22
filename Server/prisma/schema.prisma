@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Dancer {
+model Leads {
   id  Int @id @default(autoincrement())
   full_name String
   email String
@@ -26,12 +26,24 @@ model Dancer {
 
 model User {
   id Int @id @default(autoincrement())
-  username String
+  username String @unique
   password String
+  full_name String?
+  title String?
+  email String?
+  phone_number String?
+  location String?
+  services String[]
+  technique String[]
+  notes String?
+  experience String?
+  age Int?
+  birthday DateTime?
+  creationDate DateTime @default(now())
 }
 
 model Super {
   id Int @id @default(autoincrement())
-  username String
+  username String @unique
   password String
 }

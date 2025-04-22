@@ -7,7 +7,8 @@ const Services = React.forwardRef((props, ref) => {
     "Private Coaching",
     "Performances",
     "Arts Administration",
-    "Dance Education"
+    "Teaching",
+    "Workshops"
   ];
 
   const details = [
@@ -16,7 +17,8 @@ const Services = React.forwardRef((props, ref) => {
     "Offer one-on-one coaching for skill development.",
     "Perform in various artistic and commercial settings.",
     "Manage and organize dance-related events and projects.",
-    "Educate students on different dance styles and techniques."
+    "Educate students on different dance styles and techniques.",
+    "Work with students to improve their dance styles and techniques."
   ];
 
   return (
@@ -30,7 +32,8 @@ const Services = React.forwardRef((props, ref) => {
             <div className='card-content'>
               <h4 className="service-title">
                 {service}
-                <span className="tooltip">{details[index]}</span>
+                {`----`}
+                {details[index]}
               </h4>
             </div>
           </div>

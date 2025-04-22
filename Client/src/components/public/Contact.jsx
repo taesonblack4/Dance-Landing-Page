@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 // API endpoint configuration (⚠️ Should use environment variables)
-const HOST = 'http://localhost:4004/clients/';
+const HOST = 'http://localhost:4004/basic/leads/';
 
 // ClientForm component handles form submission and state management
 const ClientForm = () => {
@@ -31,7 +31,7 @@ const ClientForm = () => {
     };
 
     // Form submission handler
-    const addDancer = async () => {
+    const addLead = async () => {
         // Basic validation for required fields
         if (!fullName || !email || !phoneNumber) {
             alert("Please fill out all required fields.");
@@ -74,7 +74,7 @@ const ClientForm = () => {
     // Form submission handler
     const onSubmit = (e) => {
         e.preventDefault(); // Prevent default form behavior
-        addDancer(); // Trigger submission
+        addLead(); // Trigger submission
     };
 
     // Form UI with improved styling

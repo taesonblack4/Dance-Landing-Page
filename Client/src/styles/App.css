@@ -1,12 +1,20 @@
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;  /* Ensures padding and border are included in element's total width/height */
   width: 100%;
+  box-sizing: border-box;  /* Ensures padding and border are included in element's total width/height */
 }
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 .app-container{
+  width: 100%;
   margin: 0 auto;
 }
+
 
 /**************************************************************************************************************************/
 
@@ -88,6 +96,7 @@
 
 .service-card {
   background-color: white;
+  height: 200px;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -189,7 +198,6 @@
   position: relative;
   background-color: black;
   padding: 20px;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -201,15 +209,16 @@
   gap: 15px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  width: 90%;
+  width: calc(100% - 80px);
   max-width: 1200px;
   white-space: nowrap;
-  padding: 10px;
+  padding: 10px 0;
   position: relative;
 }
 
 .media-row {
   display: flex;
+  max-width: 100%;
   gap: 15px;
   white-space: nowrap;
 }
@@ -232,13 +241,15 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   border: none;
-  padding: 10px 15px;
+  padding: 8px 12px; /* Smaller padding */
   cursor: pointer;
-  font-size: 24px;
+  font-size: 20px; /* Smaller icon */
   border-radius: 50%;
   transition: background 0.3s ease;
+  z-index: 2; /* Higher z-index */
+  width: auto; /* Override any potential width inheritance */
 }
 
 .scroll-btn:hover {
@@ -246,11 +257,11 @@
 }
 
 .left-btn {
-  left: 10px;
+  left: 20px; /* Adjust based on your layout */
 }
 
 .right-btn {
-  right: 10px;
+  right: 20px; /* Adjust based on your layout */
 }
 
 /* Ensure 3 media items are visible at a time */
