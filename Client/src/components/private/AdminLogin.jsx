@@ -7,7 +7,7 @@ import axios from 'axios';
 // Login component handling admin authentication
 const AdminLogin = ({ onLogin, onCancel }) => {
 
-    const Login_HOST = 'http://localhost:4004/authentication/admin/login';
+    const Login_HOST = 'http://localhost:4004/auth/admin/login';
 
     // State management for form fields and error messages
     const [username, setUsername] = useState('');

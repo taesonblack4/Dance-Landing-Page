@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const {getAdmins, getLeads, createAdmin, updateLead, deleteLead} = require('./adminControllers');
+const {authenticate} = require('../Middlewares/auth')
+const {
+    getAdmins, 
+    getLeads, 
+    createAdmin, 
+    updateLead, 
+    deleteLead} = require('./adminControllers');
 
-router.get('/admin/users/', getAdmins);
-router.get('/admin/leads/', getLeads);
-router.post('/admin/users/', createAdmin);
-router.put('/admin/leads/:id', updateLead);
-router.delete('/admin/leads/:id', deleteLead);
+router.get('/users/', authenticate,getAdmins);
+router.get('/leads/', authenticate,getLeads);
+router.post('/users/', authenticate,createAdmin);
+router.put('/leads/:id', authenticate,updateLead);
+router.delete('/leads/:id', authenticate,deleteLead);
 
 
 

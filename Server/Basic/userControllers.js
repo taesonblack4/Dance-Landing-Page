@@ -1,26 +1,42 @@
-const {PrismaClient} = require('@prisma/client');
-const prisma = new PrismaClient;
+const prisma = require('../prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-exports.getUsers = async (req,res) => {
-    const users = await prisma.user.findMany();
-    res.json(users);
-    //this is from authentixation video, not sure how to implement
-    //res.json(users.filter(user => user.username === req.user.name))
+exports.getUsers = async (req,res, next) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: { id: true, username: true}
+        });
+        res.json({success: true, data: users });
+    } catch (err) {
+        next(err);
+    }
 };
 
-exports.createUser = async (req,res) => {
+exports.createUser = async (req,res,next) => {
 
     try {
-        const {username, password} = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const user = await prisma.user.create({
-            data: {username, password: hashedPassword}
+        const existingUser = await prisma.user.findUnique({
+            where: {username: req.body.username}
         });
-        res.status(201).json(user);
-    } catch {
-        res.status(500).send('error creating user');
+
+        if(existingUser) {
+            throw new Error('Username already exists', {statusCode: 409});
+        }
+
+        const {username, password} = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await prisma.user.create({
+            data: {
+                username,
+                password: hashedPassword
+            },
+            select: { id:true, username:true }
+        });
+        res.status(201).json({success: true, data:user});
+    } catch (err) {
+        next(err);
     }
 
 };
