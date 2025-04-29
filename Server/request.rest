@@ -2,10 +2,10 @@ GET http://localhost:4004/basic/users/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJ0ZXN0IiwicGFzc3dvcmQiOiIkMmIkMTAkekltSUx6SGN5SHl1VXIuWlQwYlFrZU5La3BBU0xmeGYuVVZpaVJrVTNsQm1jYnREZ3BxY1ciLCJmdWxsX25hbWUiOm51bGwsInRpdGxlIjpudWxsLCJlbWFpbCI6bnVsbCwicGhvbmVfbnVtYmVyIjpudWxsLCJsb2NhdGlvbiI6bnVsbCwic2VydmljZXMiOltdLCJ0ZWNobmlxdWUiOltdLCJub3RlcyI6bnVsbCwiZXhwZXJpZW5jZSI6bnVsbCwiYWdlIjpudWxsLCJiaXJ0aGRheSI6bnVsbCwiY3JlYXRpb25EYXRlIjoiMjAyNS0wNC0xNVQxNjoxMzoxMi45NzhaIiwiaWF0IjoxNzQ1NTE5NTgwfQ.Nn4KoCsD8w_T25yCHUkjhDn72qgXrXrV4pTmZkiPVfo
 ###
 
-POST http://localhost:4004/admin/user/login
+POST http://localhost:4004/admin/user
 Content-Type: application/json
 
 {
-    "username": "test",
-    "password": "test"
+    "username": "testing",
+    "password": "testing"
 }

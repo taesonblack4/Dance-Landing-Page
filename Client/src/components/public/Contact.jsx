@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 // API endpoint configuration (⚠️ Should use environment variables)
-const HOST = 'http://localhost:4004/basic/leads/';
+const HOST = 'http://localhost:4004/basic/leads';
 
 // ClientForm component handles form submission and state management
 const ClientForm = () => {

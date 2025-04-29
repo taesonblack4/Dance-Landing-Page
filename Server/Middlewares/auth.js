@@ -26,16 +26,29 @@ const authenticate = (req, res, next) => {
     });
   }
 
-  // 3. Verify token
+  // // 3. Verify token
+  // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+  //   if (err) {
+  //     return res.status(403).json({
+  //       success: false,
+  //       message: 'Invalid or expired token'
+  //     });
+  //   }
+
+
+  //   // 4. Attach user data to request
+  //   req.user = user;
+  //   next();
+  // });
+
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
+    if (err || user.role !== 'super') { // Add role check
       return res.status(403).json({
         success: false,
-        message: 'Invalid or expired token'
+        message: 'Admin privileges required'
       });
     }
 
-    // 4. Attach user data to request
     req.user = user;
     next();
   });

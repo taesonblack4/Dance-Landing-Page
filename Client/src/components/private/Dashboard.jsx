@@ -10,7 +10,7 @@ import axios from 'axios';
 const Dashboard = () => {
     // API endpoints - ⚠️ Should be moved to environment variables
     const HOST = 'http://localhost:4004/admin/leads/'; // Public client endpoint
-    const Admin_HOST = 'http://localhost:4004/admin/leads/'; // Admin-only endpoint
+    //const Admin_HOST = 'http://localhost:4004/admin/leads/'; // Admin-only endpoint
 
     // Component state management
     const [state, setState] = useState([]); // Array of client objects
@@ -26,14 +26,35 @@ const Dashboard = () => {
     // Fetch client data from API
     const FetchLeads = async () => {
         try {
+            const token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                console.error("No access token found - redirecting to login");
+                // Redirect to login page
+                window.location.href = '/admin-login';
+                return;
+            }
+
             // Make GET request to public endpoint
-            const response = await axios.get(HOST);
+            const response = await axios.get(HOST, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
             // Update state with fetched data
-            setState(response.data);
+            setState(response.data.data);
         } catch (error) {
             // Basic error handling - needs improvement
             console.error("Error fetching clients:", error);
             // 🚨 Consider adding user-facing error notification
+                // Handle token expiration
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                alert("Admin privileges required");
+                localStorage.removeItem("accessToken");
+                // Redirect to login
+                window.location.href = '/admin-login';
+            }
         }
     };
 
@@ -41,6 +62,10 @@ const Dashboard = () => {
     useEffect(() => {
         // Fetch data when component mounts
         FetchLeads();
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            window.location.href = '/admin-login';
+        }
         // Cleanup function (none needed here)
         return () => {};
     }, []); // Empty dependency array = runs once on mount

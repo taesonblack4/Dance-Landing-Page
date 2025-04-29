@@ -23,12 +23,20 @@ const AdminLogin = ({ onLogin, onCancel }) => {
 
         try {
             const response = await axios.post(Login_HOST, loginData);
+
+            // Store the token properly
+            localStorage.setItem("accessToken", response.data.data.accessToken);
+
+
+            // Add authorization header for future requests
+            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.data.accessToken}`;
+
             if(response) {
                 localStorage.setItem("isAdmin", "true");
                 onLogin();
             }
-        } catch {
-            setError('invalid username or password');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Invalid credentials');
         }
     };
 

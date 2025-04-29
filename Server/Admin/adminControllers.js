@@ -1,5 +1,4 @@
-const {PrismaClient} = require('@prisma/client');
-const prisma = new PrismaClient;
+const prisma = require('../prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -8,9 +7,16 @@ exports.getAdmins = async (req,res) => {
     res.json(users);
 };
 
-exports.getLeads = async (req,res) => {
-    const leads = await prisma.leads.findMany();
-    res.json(leads);
+exports.getLeads = async (req,res,next) => {
+    try {
+        const leads = await prisma.leads.findMany();
+        res.json({
+            success: true, 
+            data: leads
+        })
+    } catch (error) {
+        next(error)
+    }
 }
 
 exports.createAdmin = async (req,res) => {

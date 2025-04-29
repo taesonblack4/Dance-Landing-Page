@@ -19,7 +19,10 @@ const loginHandler = (userType) => async (req, res, next) => {
         }
         //create token
         const accessToken = jwt.sign(
-            {userId: user.id, role:userType}, //safer payload
+            {
+                userId: user.id, 
+                role: 'super'
+            }, //safer payload
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn: '1h'}
         );
