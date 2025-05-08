@@ -2,18 +2,23 @@
 import React, { useState, useEffect } from 'react';
 // HTTP client for making API requests
 import axios from 'axios';
+import LeadGrid from './components/LeadGrid';
+import UserGrid from './components/UserGrid';
 
 //Need to create view that seperates client intake form data from site users 
 //users with have the ability book consultations through site 
 //maybe calendly ??
 
-const Dashboard = () => {
+const AdminDashboard = () => {
     // API endpoints - ⚠️ Should be moved to environment variables
-    const HOST = 'http://localhost:4004/admin/leads/'; // Public client endpoint
-    //const Admin_HOST = 'http://localhost:4004/admin/leads/'; // Admin-only endpoint
+    const L_HOST = 'http://localhost:4004/admin/leads/';
+    const U_HOST = 'http://localhost:4004/basic/basic/users/';
 
     // Component state management
-    const [state, setState] = useState([]); // Array of client objects
+    const [activeView, setActiveView] = useState('leads');
+    //const [state, setState] = useState([]); // Array of client objects
+    const [leads, setLeads] = useState([]);
+    const [users, setUsers] = useState([]);
     const [editingLead, setEditingLead] = useState(null); // ID of client being edited
     const [updatedLead, setUpdatedLead] = useState({ // Stores edited values
         full_name: "",
@@ -23,7 +28,7 @@ const Dashboard = () => {
         technique: [] // Array of selected techniques
     });
 
-    // Fetch client data from API
+    // Fetch lead data from API
     const FetchLeads = async () => {
         try {
             const token = localStorage.getItem("accessToken");
@@ -36,18 +41,50 @@ const Dashboard = () => {
             }
 
             // Make GET request to public endpoint
-            const response = await axios.get(HOST, {
+            const response = await axios.get(L_HOST, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
             // Update state with fetched data
-            setState(response.data.data);
+            setLeads(response.data.data);
         } catch (error) {
             // Basic error handling - needs improvement
-            console.error("Error fetching clients:", error);
-            // 🚨 Consider adding user-facing error notification
+            console.error("Error fetching leads:", error);
+                // Handle token expiration
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                alert("Admin privileges required");
+                localStorage.removeItem("accessToken");
+                // Redirect to login
+                window.location.href = '/admin-login';
+            }
+        }
+    };
+
+    const FetchUsers = async () => {
+        try {
+            const token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                console.error("No access token found - redirecting to login");
+                // Redirect to login page
+                window.location.href = '/admin-login';
+                return;
+            }
+
+            // Make GET request to public endpoint
+            const response = await axios.get(U_HOST, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            // Update state with fetched data
+            setUsers(response.data.data);
+        } catch (error) {
+            // Basic error handling - needs improvement
+            console.error("Error fetching enrolled users:", error);
                 // Handle token expiration
             if (error.response?.status === 401 || error.response?.status === 403) {
                 alert("Admin privileges required");
@@ -62,6 +99,7 @@ const Dashboard = () => {
     useEffect(() => {
         // Fetch data when component mounts
         FetchLeads();
+        FetchUsers();
         const token = localStorage.getItem("accessToken");
         if (!token) {
             window.location.href = '/admin-login';
@@ -77,9 +115,9 @@ const Dashboard = () => {
 
         try {
             // Make DELETE request to admin endpoint
-            await axios.delete(`${Admin_HOST}${id}`);
+            await axios.delete(`${L_HOST}${id}`);
             // Optimistic UI update: Remove client from local state
-            setState(prevState => prevState.filter(lead => lead.id !== id));
+            setLeads(prevState => prevState.filter(lead => lead.id !== id));
         } catch (error) {
             // Error handling needs improvement
             console.error("Error deleting client:", error);
@@ -126,8 +164,17 @@ const Dashboard = () => {
     // Submit updated client data
     const updateLead = async (id) => {
         try {
+            const token = localStorage.getItem("accessToken"); // Get token
+            
             // Send PUT request to admin endpoint
-            await axios.put(`${Admin_HOST}${id}`, updatedLead);
+            await axios.put(`${L_HOST}${id}`, updatedLead, {
+                headers: {  // Add authorization headers
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+            });
+        
+            
             // Exit edit mode
             setEditingLead(null);
             // Refresh data from server - 🚨 Could use optimistic update instead
@@ -136,103 +183,54 @@ const Dashboard = () => {
             console.error("Error updating client:", error);
             alert("Failed to update client.");
             // 🚨 Consider maintaining edit mode on failure
+
+            // Handle expired/invalid token
+            if (error.response?.status === 401) {
+                localStorage.removeItem("accessToken");
+                window.location.href = '/admin-login';
+            }
         }
     };
 
     // Component UI
     return (
         <div style={{ padding: '20px' }}>
-            <h2>Lead Dashboard</h2>
+            <h2>Admin Dashboard</h2>
             {/* Responsive grid layout */}
-            <div style={styles.gridContainer}>
-                {state.map((lead, index) => (
-                    <div key={index} style={styles.card}>
-                        {/* Conditional rendering: Edit mode vs View mode */}
-                        {editingLead === lead.id ? (
-                            /* EDIT MODE */
-                            <>
-                                {/* Editable text inputs */}
-                                <input 
-                                    type="text" 
-                                    name="full_name" 
-                                    value={updatedLead.full_name} 
-                                    onChange={handleChange} 
-                                    placeholder="Full Name" 
-                                />
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    value={updatedLead.email} 
-                                    onChange={handleChange} 
-                                    placeholder="Email" 
-                                />
-                                <input 
-                                    type="tel" 
-                                    name="phone_number" 
-                                    value={updatedLead.phone_number} 
-                                    onChange={handleChange} 
-                                    placeholder="Phone Number" 
-                                />
-
-                                {/* Services checkbox group */}
-                                <p><strong>Services:</strong></p>
-                                {["Choreography", "Movement Coaching", "Private Coaching", "Performances", "Arts Administration", "Teaching", "Workshops"].map(service => (
-                                    <label key={service}>
-                                        <input
-                                            type="checkbox"
-                                            value={service}
-                                            checked={updatedLead.services.includes(service)}
-                                            onChange={(e) => handleCheckboxChange(e, "services")}
-                                        />
-                                        {service}
-                                    </label>
-                                ))}
-
-                                {/* Technique checkbox group */}
-                                <p><strong>Technique:</strong></p>
-                                {["Hip Hop", "Jazz", "Modern", "Ballet", "Contemporary"].map(technique => (
-                                    <label key={technique}>
-                                        <input
-                                            type="checkbox"
-                                            value={technique}
-                                            checked={updatedLead.technique.includes(technique)}
-                                            onChange={(e) => handleCheckboxChange(e, "technique")}
-                                        />
-                                        {technique}
-                                    </label>
-                                ))}
-
-                                {/* Action buttons */}
-                                <button onClick={() => updateLead(lead.id)} style={styles.updateButton}>
-                                    Save
-                                </button>
-                                <button onClick={() => setEditingLead(null)} style={styles.cancelButton}>
-                                    Cancel
-                                </button>
-                            </>
-                        ) : (
-                            /* VIEW MODE */
-                            <>
-                                {/* Client information display */}
-                                <h3>{lead.full_name}</h3>
-                                <p><strong>Email:</strong> {lead.email}</p>
-                                <p><strong>Phone:</strong> {lead.phone_number}</p>
-                                <p><strong>Services:</strong> {Array.isArray(lead.services) ? lead.services.join(", ") : lead.services}</p>
-                                <p><strong>Technique:</strong> {Array.isArray(lead.technique) ? lead.technique.join(", ") : lead.technique}</p>
-                                <p><strong>Message:</strong> {lead.message}</p>
-                                
-                                {/* Action buttons */}
-                                <button onClick={() => startEditing(lead)} style={styles.updateButton}>
-                                    Update
-                                </button>
-                                <button onClick={() => deleteLead(lead.id)} style={styles.deleteButton}>
-                                    Delete
-                                </button>
-                            </>
-                        )}
-                    </div>
-                ))}
+            {/* View Toggle Buttons */}
+            <div style={styles.buttonContainer}>
+                <button 
+                    onClick={() => setActiveView('leads')}
+                    //style={{...}}
+                >
+                    Leads
+                </button>
+                <button
+                    onClick={() => setActiveView('users')}
+                    //style={{...}}
+                >
+                    Users
+                </button>
             </div>
+
+            {activeView === 'leads' ? (
+                <LeadGrid
+                    leads={leads}
+                    editingLead={editingLead}
+                    updatedLead={updatedLead}
+                    handlers={{
+                        startEditing,
+                        setEditingLead,
+                        handleChange,
+                        handleCheckboxChange,
+                        updateLead,
+                        deleteLead
+                    }}
+                />
+            ) : (
+                <UserGrid users={users} />
+            )}
+
         </div>
     );
 };
@@ -283,4 +281,4 @@ const styles = {
     }
 };
 
-export default Dashboard;
+export default AdminDashboard;

@@ -6,7 +6,8 @@ const {
     getLeads, 
     createAdmin, 
     updateLead, 
-    deleteLead} = require('./adminControllers');
+    deleteLead
+} = require('./adminControllers');
 
 router.get('/users/', authenticate,getAdmins);
 router.get('/leads/', authenticate,getLeads);

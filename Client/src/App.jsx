@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 // Import public components
-import ScrollToTop from './components/public/ScrollToTop';
+import ScrollToTop from './components/Common/Utils/ScrollToTop';
 import Navbar from './components/public/Navbar';
 import Home from './components/public/Home';
 import Services from './components/public/Services';
@@ -12,10 +12,11 @@ import Gallery from './components/public/Gallery';
 import Footer from './components/public/Footer';
 
 // Import private (admin) components
-import Dashboard from './components/private/Dashboard';
-import AdminLogin from './components/private/AdminLogin';
-import UserLogin from './components/public/UserLogin';
-import SignUp from './components/public/SignUp';
+import AdminDashboard from './components/private/Admin/AdminDashboard';
+import AdminLogin from './components/Common/Auth/AdminLogin';
+//import UserDashboard from './components/private/User/UserDashboard';
+import UserLogin from './components/Common/Auth/UserLogin';
+import SignUp from './components/Common/Auth/SignUp';
 
 // Import global styles
 import './styles/App.css';
@@ -71,7 +72,7 @@ const handleSignUp = () => {
       {isAdmin ? (
         // Admin dashboard view
         <>
-          <Dashboard />
+          <AdminDashboard />
           <button onClick={handleLogout} style={styles.logoutButton}>
             Log Out
           </button>

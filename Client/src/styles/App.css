@@ -96,7 +96,7 @@ html, body {
 
 .service-card {
   background-color: white;
-  height: 200px;
+  height: 250px;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -116,45 +116,10 @@ html, body {
   display: inline-block;
   cursor: pointer;
   text-align: center;
+  color: #333;
 }
 
-/* Tooltip bubble (hidden by default) */
-.tooltip {
-  visibility: hidden;
-  opacity: 0;
-  position: absolute;
-  left: 50%; /* Centers tooltip */
-  bottom: 100%; /* Moves tooltip above the text */
-  transform: translateX(-50%) translateY(-10px); /* Adjusts positioning */
-  background-color: black;
-  color: white;
-  text-align: center;
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
 
-/* Small arrow for tooltip */
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%; /* Arrow at bottom of tooltip */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 6px;
-  border-style: solid;
-  border-color: black transparent transparent transparent; /* Triangle effect */
-}
-
-/* Show tooltip on hover */
-.service-title:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(-15px); /* Moves tooltip slightly upward */
-}
 
 
 /* Show description on hover */
@@ -164,8 +129,8 @@ html, body {
 }
 
 
-.card-content h4 {
-  margin: 0;
+.card-content {
+  margin: 0 auto;
   color: #333;
   font-size: 1.1rem;
   text-align: center;
