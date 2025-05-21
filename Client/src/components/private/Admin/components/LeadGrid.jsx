@@ -3,8 +3,8 @@ import React from 'react'
 const LeadGrid = ({leads, editingLead, updatedLead, handlers}) => {
   return (
     <div style={styles.gridContainer}>
-    {leads.map((lead, index) => (
-        <div key={index} style={styles.card}>
+    {leads.map((lead) => (
+        <div key={lead.id} style={styles.card}>
             {/* Conditional rendering: Edit mode vs View mode */}
             {editingLead === lead.id ? (
                 /* EDIT MODE */

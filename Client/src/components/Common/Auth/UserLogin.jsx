@@ -1,12 +1,13 @@
 // Import React core library and useState hook
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 
 // Login component handling admin authentication
-const UserLogin = ({ onLogin, onCancel }) => {
-
+const UserLogin = ({onLogin}) => {
+    const navigate = useNavigate();
     const Login_HOST = 'http://localhost:4004/auth/user/login';
 
     // State management for form fields and error messages
@@ -23,13 +24,18 @@ const UserLogin = ({ onLogin, onCancel }) => {
         console.log(loginData);
         try {
             const response = await axios.post(Login_HOST, loginData);
+            console.log('Login response:', response.data);
             if(response) {
-                localStorage.setItem("isAdmin", "true");
+                localStorage.setItem("isUser", "true");
+                localStorage.setItem("accessToken", response.data.token); // assuming token is returned
+                localStorage.setItem("userId", response.data.user.id); // <-- store user ID
                 onLogin();
+                navigate('/user-dashboard') // go to user dashboard
             }
         } catch {
             setError('invalid username or password');
         }
+
     };
 
 
@@ -63,7 +69,7 @@ const UserLogin = ({ onLogin, onCancel }) => {
             <button onClick={handleLogin} style={styles.button}>
                 Login
             </button>
-            <button onClick={onCancel}>
+            <button onClick={() => navigate('/')}>
                 Cancel
             </button>
         </div>

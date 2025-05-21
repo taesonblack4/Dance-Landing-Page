@@ -21,7 +21,7 @@ const loginHandler = (userType) => async (req, res, next) => {
         const accessToken = jwt.sign(
             {
                 userId: user.id, 
-                role: 'super'
+                role: userType
             }, //safer payload
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn: '1h'}
@@ -29,7 +29,12 @@ const loginHandler = (userType) => async (req, res, next) => {
         //standard response
         res.json({
             success: true,
-            data: {accessToken}
+            token: accessToken,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
         });
     } catch (err) {
         next(err);

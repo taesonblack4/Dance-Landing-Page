@@ -36,11 +36,11 @@ exports.createAdmin = async (req,res) => {
 
 exports.updateLead = async (req,res) => {
     const { id } = req.params;
-    const { name ,email, phone, services, technique} = req.body;
+    const { full_name ,email, phone_number, services, technique} = req.body;
 
     const lead = await prisma.leads.update({
         where: {id: parseInt(id)},
-        data: {full_name: name,email, phone_number: phone, services, technique}
+        data: {full_name,email, phone_number, services, technique}
     });
 
     res.json(lead);

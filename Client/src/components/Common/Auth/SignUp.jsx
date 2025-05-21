@@ -1,11 +1,13 @@
 // Import React core library and useState hook
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 
 // Login component handling admin authentication
-const SignUp = ({ onSignUp, onCancel }) => {
+const SignUp = () => {
+    const navigate = useNavigate();
 
     const HOST = 'http://localhost:4004/basic/users';
 
@@ -28,7 +30,7 @@ const SignUp = ({ onSignUp, onCancel }) => {
 
             console.log("User added:", response.data);
             alert("Sign up process is successful!!!");
-            onSignUp();
+            navigate('/user-login'); //redirect to login page
           
         } catch {
             setError('error creating new user');
@@ -67,7 +69,7 @@ const SignUp = ({ onSignUp, onCancel }) => {
                 Join
             </button>
             {/* Cancel sign up process ans return to LP */}
-            <button onClick={onCancel}>
+            <button onClick={() => navigate('/')}>
                 Cancel
             </button>
         </div>

@@ -13,6 +13,27 @@ exports.getUsers = async (req,res, next) => {
     }
 };
 
+exports.getUser = async (req,res,next) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({error: 'Missing ID'})
+        } 
+
+        const user = await prisma.user.findUnique({
+            where: {id: parseInt(id)}
+        });
+
+        if(!user) {
+            return res.status(404).json({error: 'User not found'})
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 exports.createUser = async (req,res,next) => {
 
     try {
@@ -24,15 +45,20 @@ exports.createUser = async (req,res,next) => {
             throw new Error('Username already exists', {statusCode: 409});
         }
 
-        const {username, password} = req.body;
+        const {username, password, full_name, email, phone_number, location, age} = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await prisma.user.create({
             data: {
                 username,
-                password: hashedPassword
+                password: hashedPassword,
+                full_name,
+                email,
+                phone_number,
+                location,
+                age
             },
-            select: { id:true, username:true }
+            select: { id:true, username:true, full_name: true, email: true, phone_number: true, location: true, age: true }
         });
         res.status(201).json({success: true, data:user});
     } catch (err) {

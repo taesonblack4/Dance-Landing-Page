@@ -9,9 +9,9 @@ const {
     deleteLead
 } = require('./adminControllers');
 
-router.get('/users/', authenticate,getAdmins);
+router.get('/users/',getAdmins);
 router.get('/leads/', authenticate,getLeads);
-router.post('/users/', authenticate,createAdmin);
+router.post('/users/', createAdmin);
 router.put('/leads/:id', authenticate,updateLead);
 router.delete('/leads/:id', authenticate,deleteLead);
 

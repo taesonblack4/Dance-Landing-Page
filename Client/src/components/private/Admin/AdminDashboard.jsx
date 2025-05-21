@@ -5,7 +5,11 @@ import axios from 'axios';
 import LeadGrid from './components/LeadGrid';
 import UserGrid from './components/UserGrid';
 
-//Need to create view that seperates client intake form data from site users 
+/* 
+NEED TO ADD 
+- logout button
+- navbar to view {users/leads (seperate tabs) , booking calendar , home(comprehensive view)}
+*/ 
 //users with have the ability book consultations through site 
 //maybe calendly ??
 
@@ -142,6 +146,7 @@ const AdminDashboard = () => {
 
     // Handle text input changes
     const handleChange = (e) => {
+        console.log("handleChange", e.target.name, e.target.value);
         // Update corresponding field in state
         setUpdatedLead(prev => ({
             ...prev,
@@ -163,11 +168,16 @@ const AdminDashboard = () => {
 
     // Submit updated client data
     const updateLead = async (id) => {
+        //the correct data is being stored but not saved (full_name & phone_number)
+        console.log(updatedLead);
+
+
+        
         try {
             const token = localStorage.getItem("accessToken"); // Get token
             
             // Send PUT request to admin endpoint
-            await axios.put(`${L_HOST}${id}`, updatedLead, {
+            const response = await axios.put(`${L_HOST}${id}`, updatedLead, {
                 headers: {  // Add authorization headers
                   Authorization: `Bearer ${token}`,
                   "Content-Type": "application/json"
@@ -177,12 +187,16 @@ const AdminDashboard = () => {
             
             // Exit edit mode
             setEditingLead(null);
+
             // Refresh data from server - 🚨 Could use optimistic update instead
             FetchLeads();
         } catch (error) {
             console.error("Error updating client:", error);
             alert("Failed to update client.");
             // 🚨 Consider maintaining edit mode on failure
+
+            // Rollback on error
+            setLeads(prevLeads => [...prevLeads]);
 
             // Handle expired/invalid token
             if (error.response?.status === 401) {
@@ -200,14 +214,13 @@ const AdminDashboard = () => {
             {/* View Toggle Buttons */}
             <div style={styles.buttonContainer}>
                 <button 
-                    onClick={() => setActiveView('leads')}
-                    //style={{...}}
+                    onClick={() => setActiveView('leads')}      
                 >
                     Leads
                 </button>
                 <button
                     onClick={() => setActiveView('users')}
-                    //style={{...}}
+    
                 >
                     Users
                 </button>
