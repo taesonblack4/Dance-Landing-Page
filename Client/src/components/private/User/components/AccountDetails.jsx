@@ -5,17 +5,12 @@ import axios from 'axios';
 
 const AccountDetails = ({user}) => {
   
-
-  
   return (
     <div>
       <h2>Welcome, {user.username}</h2>
       <p>Email: {user.email}</p>
       <p>Name: {user.full_name}</p>
-      <p></p>
-      <p></p>
-      <p></p>
-
+      <p>Phone #: {user.phone_number}</p>
     </div>
   )
 }
