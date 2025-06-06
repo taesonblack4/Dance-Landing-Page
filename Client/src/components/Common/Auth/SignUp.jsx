@@ -29,8 +29,11 @@ const SignUp = () => {
             });
 
             console.log("User added:", response.data);
-            alert("Sign up process is successful!!!");
-            navigate('/user-login'); //redirect to login page
+            const userId = response.data.data.id;
+            alert("Username and Password is valid!!! Now redirecting to account registration");
+            localStorage.setItem('registeredUserId', userId);
+            navigate('/signup/register');
+            //navigate('/signup/register', {state: {userId}}); //redirect to registration page
           
         } catch {
             setError('error creating new user');
@@ -64,9 +67,9 @@ const SignUp = () => {
             {/* Error message display */}
             {error && <p style={styles.error}>{error}</p>}
             
-            {/* Login submission button */}
+            {/* Sign up submission button */}
             <button onClick={handleSignUp} style={styles.button}>
-                Join
+                Regsister
             </button>
             {/* Cancel sign up process ans return to LP */}
             <button onClick={() => navigate('/')}>

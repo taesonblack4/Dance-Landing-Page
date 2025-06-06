@@ -29,7 +29,7 @@ model User {
   username String @unique
   password String
   full_name String?
-  title String?
+  title String[]
   email String?
   phone_number String?
   location String?

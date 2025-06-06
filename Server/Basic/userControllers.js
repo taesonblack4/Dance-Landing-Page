@@ -67,6 +67,39 @@ exports.createUser = async (req,res,next) => {
 
 };
 
+exports.updateUser = async (req,res) => {
+    const { id } = req.params;
+    const { 
+        full_name,
+        email, 
+        phone_number,
+        title,
+        experience,
+        location,
+        birthday,
+        age,
+        services, 
+        technique} = req.body;
+
+    const user = await prisma.user.update({
+        where: {id: parseInt(id)},
+        data: {
+            full_name,
+            email, 
+            phone_number, 
+            title,
+            experience,
+            location,
+            birthday: new Date(birthday),
+            age, 
+            services, 
+            technique
+        }
+    });
+
+    res.json(user);
+}
+
 exports.createLead = async (req,res) => {
     const { name, 
         email, 

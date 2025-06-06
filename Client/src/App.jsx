@@ -7,6 +7,7 @@ import LandingPage from './components/public/LandingPage';
 import UserLogin from './components/Common/Auth/UserLogin';
 import SignUp from './components/Common/Auth/SignUp';
 import AdminLogin from './components/Common/Auth/AdminLogin';
+import Registration from './components/Common/Auth/Registration';
 
 // Import private  components
 import AdminDashboard from './components/private/Admin/AdminDashboard';
@@ -46,6 +47,7 @@ function App() {
         {/* Auth Routes */}
         <Route path="/user-login" element={<UserLogin onLogin={() => setIsUser(true)} />} />
         <Route path="/signup" element={<SignUp onSignUp={() => setIsUser(true)} />} />
+        <Route path="/signup/register" element={<Registration onSignUp={() => setIsUser(true)}/>} />
         <Route path="/admin/login" element={<AdminLogin onLogin={() => setIsAdmin(true)} />} />
 
         {/* Protected User Dashboard */}
