@@ -12,46 +12,28 @@ Clean Code --> Removes auth logic from server.js
 
 const jwt = require('jsonwebtoken');
 
-// Reusable authentication middleware
-const authenticate = (req, res, next) => {
-  // 1. Get token from header
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1]; // Bearer <token>
+const authenticate = (allowedRoles = []) => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+    
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided' });
 
-  // 2. No token → Deny access
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required'
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) return res.status(403).json({ success: false, message: 'Invalid token' });
+
+      if (allowedRoles.length && !allowedRoles.includes(user.role)) {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+      }
+
+      req.user = user;
+      next();
     });
-  }
-
-  // // 3. Verify token
-  // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-  //   if (err) {
-  //     return res.status(403).json({
-  //       success: false,
-  //       message: 'Invalid or expired token'
-  //     });
-  //   }
-
-
-  //   // 4. Attach user data to request
-  //   req.user = user;
-  //   next();
-  // });
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err || user.role !== 'super') { // Add role check
-      return res.status(403).json({
-        success: false,
-        message: 'Admin privileges required'
-      });
-    }
-
-    req.user = user;
-    next();
-  });
+  };
 };
 
-module.exports = { authenticate };
+module.exports = {
+  authUser: authenticate(['user']),
+  authAdmin: authenticate(['super']),
+  authenticate // export the raw version for flexibility
+};

@@ -34,6 +34,34 @@ exports.getUser = async (req,res,next) => {
     }
 };
 
+exports.getMe = async (req, res) => {
+    try {
+        const userId = req.user.userId; // from JWT payload
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                username: true,
+                full_name: true,
+                email: true,
+                phone_number: true,
+                location: true,
+                age: true,
+                title: true,
+                technique: true,
+                experience: true,
+                birthday: true,
+                services: true
+            }
+        });
+        console.log(req.user)
+        res.json(user);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ error: 'Failed to get user data' });
+    }
+};
+
 exports.createUser = async (req,res,next) => {
 
     try {

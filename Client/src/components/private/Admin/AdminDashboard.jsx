@@ -1,9 +1,12 @@
 // Core React imports
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // HTTP client for making API requests
 import axios from 'axios';
 import LeadGrid from './components/LeadGrid';
 import UserGrid from './components/UserGrid';
+
+
 
 /* 
 NEED TO ADD 
@@ -13,7 +16,7 @@ NEED TO ADD
 //users with have the ability book consultations through site 
 //maybe calendly ??
 
-const AdminDashboard = () => {
+const AdminDashboard = ({onLogout}) => {
     // API endpoints - ⚠️ Should be moved to environment variables
     const L_HOST = 'http://localhost:4004/admin/leads/';
     const U_HOST = 'http://localhost:4004/basic/basic/users/';
@@ -31,6 +34,8 @@ const AdminDashboard = () => {
         services: [], // Array of selected services
         technique: [] // Array of selected techniques
     });
+
+    const navigate = useNavigate();
 
     // Fetch lead data from API
     const FetchLeads = async () => {
@@ -168,11 +173,7 @@ const AdminDashboard = () => {
 
     // Submit updated client data
     const updateLead = async (id) => {
-        //the correct data is being stored but not saved (full_name & phone_number)
-        console.log(updatedLead);
-
-
-        
+    
         try {
             const token = localStorage.getItem("accessToken"); // Get token
             
@@ -210,6 +211,11 @@ const AdminDashboard = () => {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Admin Dashboard</h2>
+            <button type='button' 
+            onClick={()=> {
+                onLogout();
+                navigate('/')
+            }}>Log Out</button>
             {/* Responsive grid layout */}
             {/* View Toggle Buttons */}
             <div style={styles.buttonContainer}>

@@ -1,4 +1,5 @@
 import React , {useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AccountDetails from './components/AccountDetails';
 //view account information
@@ -9,28 +10,26 @@ import AccountDetails from './components/AccountDetails';
 //newsletter with ability to mark interested for future contact from owner
 //view promotions based on being a member 
 
-const userId = localStorage.getItem("userId");
-const HOST = `http://localhost:4004/basic/basic/users/${userId}`;
 
+const HOST = `http://localhost:4004/basic/users/me`;
 
-const UserDashboard = () => {
+const UserDashboard = ({ onLogout }) => {
 
-  const [user, setUser] = useState([]);
-  
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  //im fetching the right user but the data is wrong, confirmed with my test
   const FetchUser = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const userId = localStorage.getItem('userId');
-      //test
-      console.log('fetching user with ID: ', userId);
 
       if(!token) {
         console.error('Missing token');
         return;
-      } else if(!userId) {
+      } /*else if(!userId) {
         console.error('No user ID found in localStorage');
         return;
-      }
+      } */
 
       const response = await axios.get(HOST, {
         headers: {
@@ -41,7 +40,7 @@ const UserDashboard = () => {
 
       setUser(response.data)
     } catch (error) {
-      console.error('issue with fetching enrolled users', error);
+      console.error('Error fetching user data:', error);
     }
   }
 
@@ -49,10 +48,17 @@ const UserDashboard = () => {
     FetchUser();
 
   },[])
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/');
+  };
   
   return (
     <div>
       <h1>User Dashboard</h1>
+      <button type='button' 
+      onClick={handleLogout}>Log Out</button>
       {user ? (
         <AccountDetails user={user}/> 
       ) : (
@@ -62,4 +68,4 @@ const UserDashboard = () => {
   )
 }
 
-export default UserDashboard
+export default UserDashboard;

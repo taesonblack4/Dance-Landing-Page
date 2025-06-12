@@ -4,7 +4,8 @@ import axios from 'axios';
 
 
 const AccountDetails = ({user}) => {
-  
+  if(!user) return <p>Loading user details...</p>;
+
   return (
     <div>
       <h2>Welcome, {user.username}</h2>

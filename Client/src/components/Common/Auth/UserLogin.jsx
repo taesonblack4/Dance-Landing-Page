@@ -27,9 +27,18 @@ const UserLogin = ({onLogin}) => {
             console.log('Login response:', response.data);
             if(response) {
                 localStorage.setItem("isUser", "true");
-                localStorage.setItem("accessToken", response.data.token); // assuming token is returned
-                localStorage.setItem("userId", response.data.user.id); // <-- store user ID
-                onLogin();
+                const token = response.data.token;
+                localStorage.setItem("accessToken", token); // assuming token is returned
+                // Fetch the correct user immediately
+                const userRes = await axios.get('http://localhost:4004/basic/users/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const user = userRes.data;
+                localStorage.setItem("userId", user.id); // <-- store user ID
+                console.log("Logged in as:", user);
+
+                onLogin();// sets isUser to true
                 navigate('/user-dashboard') // go to user dashboard
             }
         } catch {

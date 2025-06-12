@@ -23,19 +23,21 @@ const AdminLogin = () => {
         console.log(loginData);
         try {
             const response = await axios.post(Login_HOST, loginData);
-
+            const token = response.data.token
+            if(!token) console.log('missing token');
             // Store the token properly
-            localStorage.setItem("accessToken", response.data.token);
+            localStorage.setItem("accessToken", token);
 
 
             // Add authorization header for future requests
-            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
             if(response) {
                 localStorage.setItem("isAdmin", "true");
                 navigate('/admin-dashboard') //go to admin dashboard
             }
         } catch (error) {
+            console.error("Admin login error:", error.response?.data || error.message);
             setError(error.response?.data?.message || 'Invalid credentials');
         }
     };

@@ -30,6 +30,10 @@ function App() {
   // Logout handler 
   const handleLogout = () => {
     localStorage.clear();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('isUser');
+    localStorage.removeItem('isAdmin');
     setIsUser(false);
     setIsAdmin(false);
   };

@@ -1,5 +1,5 @@
-GET http://localhost:4004/admin/leads
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsInJvbGUiOiJzdXBlciIsImlhdCI6MTc0NTk1MDY2NywiZXhwIjoxNzQ1OTU0MjY3fQ.6mFinH_NNi2rFhj6e19uZ3tSZ3SKy0u_BMhDW38lEkI
+GET http://localhost:4004/basic/users/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTc1NzE2OSwiZXhwIjoxNzQ5NzYwNzY5fQ.iHfwKC_R5bELbTEdRUeRowr4JJS7rka4DYglsT_21ag
 ###
 
 POST http://localhost:4004/admin/user/
@@ -11,10 +11,10 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:4004/auth/admin/login
+POST http://localhost:4004/auth/user/login/
 Content-Type: application/json
 
 {
-    "username": "initialadmin",
-    "password": "AdminPassword123"
+    "username": "thatguy",
+    "password": "testpassword"
 }
