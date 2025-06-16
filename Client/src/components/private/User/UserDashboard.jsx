@@ -26,10 +26,7 @@ const UserDashboard = ({ onLogout }) => {
       if(!token) {
         console.error('Missing token');
         return;
-      } /*else if(!userId) {
-        console.error('No user ID found in localStorage');
-        return;
-      } */
+      }
 
       const response = await axios.get(HOST, {
         headers: {

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 // Login component handling admin authentication
-const AdminLogin = () => {
+const AdminLogin = ({onLogin}) => { // Receive onLogin prop
     const navigate = useNavigate();
     const Login_HOST = 'http://localhost:4004/auth/admin/login';
 
@@ -24,18 +24,31 @@ const AdminLogin = () => {
         try {
             const response = await axios.post(Login_HOST, loginData);
             const token = response.data.token
-            if(!token) console.log('missing token');
+            
+            if(!token) {
+                setError('Authentication failed: No token received');
+                return;
+            }
+
             // Store the token properly
             localStorage.setItem("accessToken", token);
-
-
             // Add authorization header for future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            if(response) {
+            // Verify token structure before navigation
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.role.toLowerCase() === 'super') {
                 localStorage.setItem("isAdmin", "true");
-                navigate('/admin-dashboard') //go to admin dashboard
+                if (onLogin) onLogin();  // Update parent state
+                navigate('/admin-dashboard');
+              } else {
+                setError('Admin privileges required');
             }
+
+            // if(response) {
+            //     localStorage.setItem("isAdmin", "true");
+            //     navigate('/admin-dashboard') //go to admin dashboard
+            // }
         } catch (error) {
             console.error("Admin login error:", error.response?.data || error.message);
             setError(error.response?.data?.message || 'Invalid credentials');

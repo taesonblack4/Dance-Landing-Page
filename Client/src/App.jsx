@@ -8,6 +8,7 @@ import UserLogin from './components/Common/Auth/UserLogin';
 import SignUp from './components/Common/Auth/SignUp';
 import AdminLogin from './components/Common/Auth/AdminLogin';
 import Registration from './components/Common/Auth/Registration';
+import LoginHub from './components/Common/Auth/LoginHub';
 
 // Import private  components
 import AdminDashboard from './components/private/Admin/AdminDashboard';
@@ -19,21 +20,39 @@ import './styles/App.css';
 function App() {
   const [isUser, setIsUser] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false); 
 
-  // Persist login state on refresh
-  useEffect(() => {
-    setIsUser(localStorage.getItem('isUser') === 'true');
-    setIsAdmin(localStorage.getItem('isAdmin') === 'true');
-  }, []);
+    // Add this effect to verify token on app load
+    useEffect(() => {
+      const token = localStorage.getItem('accessToken');
+      
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (payload.role === 'user') {
+            setIsUser(true);
+            localStorage.setItem('isUser', 'true');
+          } else if (payload.role === 'super') {
+            setIsAdmin(true);
+            localStorage.setItem('isAdmin', 'true');
+          }
+        } catch (e) {
+          console.error("Token validation error:", e);
+        }
+      }
+      
+      setAuthChecked(true);
+    }, []);
+  
+    // Only render routes after auth check completes
+    if (!authChecked) {
+      return <div>Loading...</div>;  // Or a loading spinner
+    }
 
 
   // Logout handler 
   const handleLogout = () => {
     localStorage.clear();
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('isUser');
-    localStorage.removeItem('isAdmin');
     setIsUser(false);
     setIsAdmin(false);
   };
@@ -53,6 +72,7 @@ function App() {
         <Route path="/signup" element={<SignUp onSignUp={() => setIsUser(true)} />} />
         <Route path="/signup/register" element={<Registration onSignUp={() => setIsUser(true)}/>} />
         <Route path="/admin/login" element={<AdminLogin onLogin={() => setIsAdmin(true)} />} />
+        <Route path="/loginHub" element={<LoginHub />}/>
 
         {/* Protected User Dashboard */}
         <Route

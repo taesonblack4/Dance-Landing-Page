@@ -109,12 +109,7 @@ const AdminDashboard = ({onLogout}) => {
         // Fetch data when component mounts
         FetchLeads();
         FetchUsers();
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            window.location.href = '/admin-login';
-        }
-        // Cleanup function (none needed here)
-        return () => {};
+
     }, []); // Empty dependency array = runs once on mount
 
     // Delete client handler
