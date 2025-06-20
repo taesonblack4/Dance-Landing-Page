@@ -15,7 +15,7 @@ const Navbar = ({ scrollToSection, servicesRef, aboutRef, galleryRef, contactRef
           <li><a onClick={() => scrollToSection(aboutRef)} className="Link">About Me</a></li>
           <li><a onClick={() => scrollToSection(galleryRef)} className="Link">Gallery</a></li>
           <li><a onClick={() => scrollToSection(contactRef)} className="Link">Contact</a></li>
-          <li><a onClick={() => navigate('/LoginHub')} className="Link">Login</a></li>
+          <li><a onClick={() => navigate('/login-hub')} className="Link">Login</a></li>
           <li><a onClick={() => navigate('/signup')} className="Link">SignUp</a></li>
         </ul>
       </nav>

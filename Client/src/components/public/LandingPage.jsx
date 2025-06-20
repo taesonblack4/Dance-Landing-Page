@@ -48,11 +48,6 @@ const LandingPage = () => {
             <Contact ref={contactRef} />
             <Footer />
         </div>
-        <div className="login-buttons">
-        <button onClick={() => navigate('/user-login')} style={styles.loginButton}>User Login</button>
-        <button onClick={() => navigate('/signup')} style={styles.loginButton}>Sign Up</button>
-        <button onClick={() => navigate('/admin/login')} style={styles.loginButton}>Admin Login</button>
-      </div>
     </div>
   )
 }

@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LeadGrid from './components/LeadGrid';
 import UserGrid from './components/UserGrid';
+import AdminNav from './components/AdminNav';
 
 
 
 /* 
 NEED TO ADD 
-- logout button
 - navbar to view {users/leads (seperate tabs) , booking calendar , home(comprehensive view)}
 */ 
 //users with have the ability book consultations through site 
@@ -206,6 +206,7 @@ const AdminDashboard = ({onLogout}) => {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Admin Dashboard</h2>
+            <AdminNav />
             <button type='button' 
             onClick={()=> {
                 onLogout();

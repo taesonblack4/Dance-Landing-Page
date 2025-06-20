@@ -72,7 +72,7 @@ function App() {
         <Route path="/signup" element={<SignUp onSignUp={() => setIsUser(true)} />} />
         <Route path="/signup/register" element={<Registration onSignUp={() => setIsUser(true)}/>} />
         <Route path="/admin/login" element={<AdminLogin onLogin={() => setIsAdmin(true)} />} />
-        <Route path="/loginHub" element={<LoginHub />}/>
+        <Route path="/login-hub" element={<LoginHub />}/>
 
         {/* Protected User Dashboard */}
         <Route
