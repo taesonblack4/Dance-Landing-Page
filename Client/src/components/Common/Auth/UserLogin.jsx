@@ -39,7 +39,7 @@ const UserLogin = ({onLogin}) => {
                 console.log("Logged in as:", user);
 
                 onLogin();// sets isUser to true
-                navigate('/user-dashboard') // go to user dashboard
+                navigate('/user', {replace: true}) // go to user dashboard
             }
         } catch {
             setError('invalid username or password');

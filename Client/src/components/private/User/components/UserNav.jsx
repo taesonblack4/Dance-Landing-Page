@@ -1,21 +1,30 @@
 import React from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 const UserNav = () => {
-  return (
-    <div className='user-navbar'>
-      <div className='link-container'>
-        <nav>
-            <ul>
-                <li><a>Home</a></li>
-                <li><a>Announcements</a></li>
-                <li><a>Promos</a></li>
-                <li><a>Scheduling</a></li>
-                <li><a>Settings</a></li>
-                <li><a>Logout</a></li>
-            </ul>
-        </nav>
-      </div>
-    </div>
+    const navigate = useNavigate();
+    
+    const handleLogout = () => {
+        localStorage.clear();
+        // if you have a context or prop callback you can call that here
+        navigate('/', { replace: true });
+    };
+
+    return (
+        <div className='user-navbar'>
+            <div className='link-container'>
+                <nav>
+                    <ul>
+                        <li><NavLink to= '/user' end>Home</NavLink> </li>
+                        <li><NavLink to= '/user/announcements'>Announcements</NavLink></li>
+                        <li><NavLink to= '/user/promos'>Promos</NavLink></li>
+                        <li><NavLink to= '/user/scheduling'>Scheduling</NavLink></li>
+                        <li><NavLink to= '/user/account'>Account</NavLink></li>
+                        <li><button onClick={handleLogout}>Logout</button></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
   )
 }
 

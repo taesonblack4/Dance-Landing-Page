@@ -13,6 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Post {
+  id Int @id @default(autoincrement())
+  type String
+  title String
+  content String
+  category String[]
+  audience String[]
+  created_at DateTime @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime? 
+}
+
 model Leads {
   id  Int @id @default(autoincrement())
   full_name String
@@ -47,3 +59,5 @@ model Super {
   username String @unique
   password String
 }
+
+

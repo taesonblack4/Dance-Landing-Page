@@ -1,115 +1,155 @@
-import React from 'react'
-//having issues with the name and phone# not updating
-const LeadGrid = ({leads, editingLead, updatedLead, handlers}) => {
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const HOST = 'http://localhost:4004/admin/leads/';
+
+export default function LeadGrid() {
+  const [leads, setLeads] = useState([]);
+  const [editingLead, setEditingLead] = useState(null);
+  const [updatedLead, setUpdatedLead] = useState({
+    full_name: '',
+    email: '',
+    phone_number: '',
+    services: [],
+    technique: []
+  });
+
+  // Fetch lead data
+  useEffect(() => {
+    async function fetchLeads() {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return window.location.href = '/admin/login';
+
+        const response = await axios.get(HOST, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setLeads(response.data.data);
+      } catch (err) {
+        console.error('Error fetching leads:', err);
+      }
+    }
+    fetchLeads();
+  }, []);
+
+  // Handlers
+  const deleteLead = async (id) => {
+    if (!window.confirm('Delete this lead?')) return;
+    try {
+      await axios.delete(`${HOST}${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      setLeads(prev => prev.filter(l => l.id !== id));
+    } catch (err) {
+      console.error('Delete failed:', err);
+      alert('Failed to delete');
+    }
+  };
+
+  const startEditing = (lead) => {
+    setEditingLead(lead.id);
+    setUpdatedLead({
+      full_name: lead.full_name,
+      email: lead.email,
+      phone_number: lead.phone_number,
+      services: lead.services || [],
+      technique: lead.technique || []
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedLead(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (e, field) => {
+    const { value, checked } = e.target;
+    setUpdatedLead(prev => ({
+      ...prev,
+      [field]: checked ? [...prev[field], value] : prev[field].filter(i => i !== value)
+    }));
+  };
+
+  const updateLead = async (id) => {
+    try {
+      await axios.put(`${HOST}${id}`, updatedLead, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      setEditingLead(null);
+      // Re-fetch to reflect changes
+      const resp = await axios.get(HOST, { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }});
+      setLeads(resp.data.data);
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert('Failed to update');
+    }
+  };
+
   return (
     <div style={styles.gridContainer}>
-    {leads.map((lead) => (
+      {leads.map(lead => (
         <div key={lead.id} style={styles.card}>
-            {/* Conditional rendering: Edit mode vs View mode */}
-            {editingLead === lead.id ? (
-                /* EDIT MODE */
-                <>
-                    {/* Editable text inputs */}
-                    <input 
-                        type="text" 
-                        name="full_name" 
-                        value={updatedLead.full_name} 
-                        onChange={handlers.handleChange} 
-                        placeholder="Full Name" 
-                    />
-                    <input 
-                        type="email" 
-                        name="email" 
-                        value={updatedLead.email} 
-                        onChange={handlers.handleChange} 
-                        placeholder="Email" 
-                    />
-                    <input 
-                        type="tel" 
-                        name="phone_number" 
-                        value={updatedLead.phone_number} 
-                        onChange={handlers.handleChange} 
-                        placeholder="Phone Number" 
-                    />
-
-                    {/* Services checkbox group */}
-                    <p><strong>Services:</strong></p>
-                    {["Choreography", "Movement Coaching", "Private Coaching", "Performances", "Arts Administration", "Teaching", "Workshops"].map(service => (
-                        <label key={service}>
-                            <input
-                                type="checkbox"
-                                value={service}
-                                checked={updatedLead.services.includes(service)}
-                                onChange={(e) => handlers.handleCheckboxChange(e, "services")}
-                            />
-                            {service}
-                        </label>
-                    ))}
-
-                    {/* Technique checkbox group */}
-                    <p><strong>Technique:</strong></p>
-                    {["Hip Hop", "Jazz", "Modern", "Ballet", "Contemporary"].map(technique => (
-                        <label key={technique}>
-                            <input
-                                type="checkbox"
-                                value={technique}
-                                checked={updatedLead.technique.includes(technique)}
-                                onChange={(e) => handlers.handleCheckboxChange(e, "technique")}
-                            />
-                            {technique}
-                        </label>
-                    ))}
-
-                    {/* Action buttons */}
-                    <button onClick={() => handlers.updateLead(lead.id)} style={styles.updateButton}>
-                        Save
-                    </button>
-                    <button onClick={() => handlers.setEditingLead(null)} style={styles.cancelButton}>
-                        Cancel
-                    </button>
-                </>
-            ) : (
-                /* VIEW MODE */
-                <>
-                    {/* Client information display */}
-                    <h3>{lead.full_name}</h3>
-                    <p><strong>Email:</strong> {lead.email}</p>
-                    <p><strong>Phone:</strong> {lead.phone_number}</p>
-                    <p><strong>Services:</strong> {Array.isArray(lead.services) ? lead.services.join(", ") : lead.services}</p>
-                    <p><strong>Technique:</strong> {Array.isArray(lead.technique) ? lead.technique.join(", ") : lead.technique}</p>
-                    <p><strong>Message:</strong> {lead.message}</p>
-                    
-                    {/* Action buttons */}
-                    <button onClick={() => handlers.startEditing(lead)} style={styles.updateButton}>
-                        Update
-                    </button>
-                    <button onClick={() => handlers.deleteLead(lead.id)} style={styles.deleteButton}>
-                        Delete
-                    </button>
-                </>
-            )}
+          {editingLead === lead.id ? (
+            <>
+              <input name="full_name" value={updatedLead.full_name} onChange={handleChange} />
+              <input name="email" value={updatedLead.email} onChange={handleChange} />
+              <input name="phone_number" value={updatedLead.phone_number} onChange={handleChange} />
+              <p>Services:</p>
+              {['Choreography','Movement Coaching','Private Coaching','Performances','Arts Administration','Teaching','Workshops'].map(s => (
+                <label key={s}>
+                  <input
+                    type="checkbox"
+                    value={s}
+                    checked={updatedLead.services.includes(s)}
+                    onChange={e => handleCheckboxChange(e, 'services')}
+                  />{s}
+                </label>
+              ))}
+              <p>Technique:</p>
+              {['Hip Hop','Jazz','Modern','Ballet','Contemporary'].map(t => (
+                <label key={t}>
+                  <input
+                    type="checkbox"
+                    value={t}
+                    checked={updatedLead.technique.includes(t)}
+                    onChange={e => handleCheckboxChange(e, 'technique')}
+                  />{t}
+                </label>
+              ))}
+              <button onClick={() => updateLead(lead.id)}>Save</button>
+              <button onClick={() => setEditingLead(null)}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <h3>{lead.full_name}</h3>
+              <p>Email: {lead.email}</p>
+              <p>Phone: {lead.phone_number}</p>
+              <p>Services: {Array.isArray(lead.services) ? lead.services.join(', ') : lead.services}</p>
+              <p>Technique: {Array.isArray(lead.technique) ? lead.technique.join(', ') : lead.technique}</p>
+              <p>Message: {lead.message}</p>
+              <button onClick={() => startEditing(lead)}>Update</button>
+              <button onClick={() => deleteLead(lead.id)}>Delete</button>
+            </>
+          )}
         </div>
-    ))}
-</div>
+      ))}
+    </div>
   );
-};
-
-const styles = {
-    gridContainer: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', // Responsive grid
-        gap: '20px', // Space between cards
-        padding: '20px' // Container padding
-    },
-    card: {
-        background: '#222', // Dark background
-        color: '#fff', // White text
-        padding: '15px', // Internal spacing
-        borderRadius: '10px', // Rounded corners
-        boxShadow: '0 4px 8px rgba(0,0,0,0.2)', // Drop shadow
-        textAlign: 'left', // Text alignment
-        border: '1px solid #444' // Border styling
-    }
 }
 
-export default LeadGrid
+const styles = {
+  gridContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '20px',
+    padding: '20px'
+  },
+  card: {
+    background: '#222',
+    color: '#fff',
+    padding: '15px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+    border: '1px solid #444'
+  }
+};

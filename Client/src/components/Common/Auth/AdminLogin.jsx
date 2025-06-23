@@ -40,7 +40,7 @@ const AdminLogin = ({onLogin}) => { // Receive onLogin prop
             if (payload.role.toLowerCase() === 'super') {
                 localStorage.setItem("isAdmin", "true");
                 if (onLogin) onLogin();  // Update parent state
-                navigate('/admin-dashboard');
+                navigate('/admin', {replace: true}); //go to admin dashboard
               } else {
                 setError('Admin privileges required');
             }
