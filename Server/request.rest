@@ -1,6 +1,8 @@
 GET http://localhost:4004/basic/users/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTc1NzE2OSwiZXhwIjoxNzQ5NzYwNzY5fQ.iHfwKC_R5bELbTEdRUeRowr4JJS7rka4DYglsT_21ag
 ###
+GET  http://localhost:4004/admin/posts/1
+###
 
 POST http://localhost:4004/admin/user/
 Content-Type: application/json

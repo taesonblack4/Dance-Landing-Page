@@ -7,18 +7,6 @@ exports.getAdmins = async (req,res) => {
     res.json(users);
 };
 
-exports.getLeads = async (req,res,next) => {
-    try {
-        const leads = await prisma.leads.findMany();
-        res.json({
-            success: true, 
-            data: leads
-        })
-    } catch (error) {
-        next(error)
-    }
-}
-
 exports.createAdmin = async (req,res) => {
 
     try {
@@ -33,6 +21,19 @@ exports.createAdmin = async (req,res) => {
     }
 
 };
+
+
+exports.getLeads = async (req,res,next) => {
+    try {
+        const leads = await prisma.leads.findMany();
+        res.json({
+            success: true, 
+            data: leads
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
 exports.updateLead = async (req,res) => {
     const { id } = req.params;
@@ -53,3 +54,60 @@ exports.deleteLead =  async (req,res) => {
     });
     res.json('Lead deleted');
 };
+
+
+exports.getPost = async (req,res) => {
+    try {
+        const {id} = req.params;
+
+        if(!id) {
+            return res.status(400).json({error: "Missing ID"});
+        }
+
+        const post = await prisma.post.findUnique({
+            where: {id: parseInt(id)}
+        });
+
+        if(!post) {
+            return res.status(404).json({error: 'Post not found'});
+        }
+
+        res.json({
+            success: true,
+            data: post
+        });
+
+    } catch (error) {
+        console.error('error fetching post: ', error);
+        res.status(500).json({error: 'internal server Error'});
+    }
+};
+
+exports.createPost = async (req, res) => {
+    try {
+        const {type , title, content, category, audience , created_at} = req.body;
+        const post = await prisma.post.create({
+            data: {
+                type,
+                title,
+                content,
+                category,
+                audience,
+                created_at
+            },
+            select: {
+                id: true,
+                type: true, 
+                title: true, 
+                content: true, 
+                category: true , 
+                audience: true, 
+                created_at:true
+            }
+        })
+        res.status(201).json({success: true, data: post});
+    } catch (error) {
+        res.status(500).send('error creating post');
+    }
+};
+

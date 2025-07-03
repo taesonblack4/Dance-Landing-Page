@@ -157,3 +157,67 @@ exports.createLead = async (req,res) => {
 
     res.json(lead);
 };
+
+exports.getPosts = async (req,res) => {
+    try {
+        const posts = await prisma.post.findMany({
+        select: {
+            id: true, 
+            type: true,
+            title: true, 
+            content: true, 
+            category: true , 
+            audience: true, 
+            created_at:true,
+            updated_at: true,
+            deleted_at: true
+        }
+       });
+
+       res.json({success: true, data: posts});
+    } catch (error) {
+        console.error('error fetching posts: ', error);
+    }
+};
+
+exports.getAnnouncements = async (req,res) => {
+    try {
+        const announcements = await prisma.post.findMany({
+            where: {type: 'Announcement'},
+            select: {
+                id: true, 
+                type: true,
+                title: true, 
+                content: true, 
+                category: true , 
+                audience: true, 
+                created_at:true,
+                updated_at: true
+            }
+        });
+        res.json({success: true, data:announcements})
+    } catch (error) {
+        console.error('error fetching announcements: ', error);
+    }
+};
+
+exports.getPromotions = async (req,res) => {
+    try {
+       const promotions = await prisma.post.findMany({
+        where: {type: 'Promotion'},
+        select: {
+            id: true, 
+            type: true,
+            title: true, 
+            content: true, 
+            category: true , 
+            audience: true, 
+            created_at:true,
+            updated_at: true
+        }
+       });
+       res.json({success: true, data: promotions})
+    } catch (error) {
+        console.error('error fetching promotions: ', error);
+    }
+}
