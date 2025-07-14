@@ -1,9 +1,50 @@
-import React from 'react'
+import React , {useEffect, useState}from 'react';
+import axios from 'axios';
+
+const HOST = 'http://localhost:4004/basic/posts/promos'
 
 const Promos = () => {
+  const [posts,setposts] = useState([]);
+  const fetchPosts = async () => {
+    try {
+      const response  = await axios.get(HOST);
+      setposts(response.data.data);
+    } catch (error) {
+      console.error('Error fetching promotions:', error)
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+
+
   return (
     <div>
-      <h1>promotions</h1>
+      <h1>Promos</h1>
+      {/* Feed */}
+      <div className='feed-container'>
+        <div className='post-container'>
+          {posts.map(post => (
+            <div key={post.id}>
+              <h2>{post.title}</h2>
+              <h3>{post.type}</h3>
+              <h4>{post.content}</h4>
+
+              <p>
+                Created: {new Date(post.created_at).toLocaleString()}
+              </p>
+
+              {post.updated_at && (
+                <p>
+                  Last Updated: {new Date(post.updated_at).toLocaleString()}
+                </p>
+              )}    
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

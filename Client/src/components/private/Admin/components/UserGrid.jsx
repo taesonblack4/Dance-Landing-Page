@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const HOST = 'http://localhost:4004/basic/users/';
-
+{/*
+  - [] filters (occupation / techniques / experience)
+  - [] sort (date joined)
+  - [] delete users
+  - [] search bar
+  - [] change views (table/cells)
+*/}
 export default function UserGrid() {
   const [users, setUsers] = useState([]);
 
@@ -25,6 +31,12 @@ export default function UserGrid() {
 
   return (
     <div style={styles.gridContainer}>
+      <div>
+        Count: {users.length}
+        <button>Filter</button>
+        <button>Sort</button>
+      </div>
+
       {users.map(user => (
         <div key={user.id} style={styles.card}>
           
@@ -39,6 +51,13 @@ export default function UserGrid() {
           <p>ID #: {user.id}</p>
           {/* Add more user fields as needed */}
           <p>name: {user.full_name}</p>
+          {/* get a complete view of user details */}
+          <button>
+            View
+          </button>
+          <button>
+            Delete
+          </button>
         </div>
       ))}
     </div>

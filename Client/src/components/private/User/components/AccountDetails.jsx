@@ -2,14 +2,16 @@ import React, {useState, useEffect, useContext} from 'react';
 import { UserContext } from './UserContext';
 import axios from 'axios';
 
-
+{/*
+  - [] set and view goals
+  - [] edit account info
+*/}
 
 const AccountDetails = () => {
 
   const {user, loading} = useContext(UserContext);
   if(loading) return <p>Loading account details...</p>
   if(!user) return <p>Unable to load user...</p>;
-
   return (
     <div>
       <h2>Welcome, {user.username}</h2>
@@ -19,7 +21,7 @@ const AccountDetails = () => {
       <p>Location: {user.location}</p>
       <p>Birthday: {user.birthday}</p>
       <p>Age: {user.age}</p>
-      <p>title: </p>
+      <p>title:</p>
       <p>technique: </p>
       <p>experience: {user.experience}</p>
     </div>

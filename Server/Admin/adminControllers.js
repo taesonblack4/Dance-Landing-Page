@@ -111,3 +111,43 @@ exports.createPost = async (req, res) => {
     }
 };
 
+exports.updatePost = async (req,res) => {
+    try {
+        const {id} = req.params;
+        const {
+            type,
+            title,
+            content,
+            category,
+            audience
+        } = req.body;
+
+        const post = await prisma.post.update({
+            where: {id: parseInt(id)},
+            data: {
+                type,
+                title,
+                content,
+                category,
+                audience
+            }
+        });
+
+        res.json(post);
+    } catch (error) {
+        console.log('error updating post: ', error);
+    }
+};
+
+exports.deletePost = async (req,res) => {
+    try {
+       const {id} = req.params;
+       await prisma.post.delete({
+        where: {id: parseInt(id)}
+       });
+       res.json('Post has been deleted')
+    } catch (error) {
+        console.error('error deleting post: ', error);
+    }
+}
+

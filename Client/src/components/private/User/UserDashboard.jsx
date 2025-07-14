@@ -10,7 +10,15 @@ import { UserContext } from './components/UserContext';
 //newsletter with ability to mark interested for future contact from owner
 //view promotions based on being a member
 
-
+{/* 
+  - [] leave site feedback
+  - [] view FAQs
+  - [] widgets
+      [] current goals
+      [] inquiry box
+      [] leave feedback on last appt
+      [] recent activity (latest promo/announcement)
+*/}
 
 const HOST = `http://localhost:4004/basic/users/me`;
 

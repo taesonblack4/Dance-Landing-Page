@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const HOST = 'http://localhost:4004/admin/leads/';
-
+{/*
+  - [] count
+  - [] filter (technique/occupation/opportunity progression)
+  - [] opportunity tracker (contacted, joined, declined)
+  - [] sort (newest -> oldest)
+  - [] change views (table/cells)
+*/}
 export default function LeadGrid() {
   const [leads, setLeads] = useState([]);
   const [editingLead, setEditingLead] = useState(null);
@@ -87,6 +93,11 @@ export default function LeadGrid() {
 
   return (
     <div style={styles.gridContainer}>
+      <div>
+        count: {leads.length}
+        <button>Filter</button>
+        <button>Sort</button>
+      </div>
       {leads.map(lead => (
         <div key={lead.id} style={styles.card}>
           {editingLead === lead.id ? (

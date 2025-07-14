@@ -31,7 +31,16 @@ const Announcements = () => {
               <h2>{post.title}</h2>
               <h3>{post.type}</h3>
               <h4>{post.content}</h4>
-              <p>Posted @: {post.created_at}</p>
+
+              <p>
+                Created: {new Date(post.created_at).toLocaleString()}
+              </p>
+
+              {post.updated_at && (
+                <p>
+                  Last Updated: {new Date(post.updated_at).toLocaleString()}
+                </p>
+              )}    
             </div>
           ))}
         </div>

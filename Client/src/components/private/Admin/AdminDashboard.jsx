@@ -1,14 +1,15 @@
 // Core React imports
 import React, { useState, useEffect } from 'react';
 
-
-
-/* 
-NEED TO ADD 
-*/
-//users with have the ability book consultations through site 
-//maybe calendly ??
-
+{/*
+    - [] widgets 
+        [] user count
+        [] lead count
+        [] active promos
+        [] bookings this week
+        [] view inquiry box (questions from users)
+        [] Recent acitivity (new signups that week , last post , etc)
+*/}
 const AdminDashboard = ({onLogout}) => {
     // Component UI
     return (
