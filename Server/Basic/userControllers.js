@@ -4,23 +4,7 @@ const jwt = require('jsonwebtoken');
 
 exports.getUsers = async (req,res, next) => {
     try {
-        const users = await prisma.user.findMany({
-            select: { 
-                id: true, 
-                username: true,
-                full_name: true,
-                title: true,
-                email: true,
-                phone_number: true,
-                location: true,
-                services: true,
-                technique: true,
-                experience: true,
-                age: true,
-                birthday: true,
-                notes: true
-            }
-        });
+        const users = await prisma.user.findMany();
         res.json({success: true, data: users });
     } catch (err) {
         next(err);
@@ -121,7 +105,8 @@ exports.updateUser = async (req,res) => {
         birthday,
         age,
         services, 
-        technique} = req.body;
+        technique
+    } = req.body;
 
     const user = await prisma.user.update({
         where: {id: parseInt(id)},
@@ -141,6 +126,18 @@ exports.updateUser = async (req,res) => {
 
     res.json(user);
 }
+
+exports.deleteUser = async (req,res) => {
+    try {
+        const {id} = req.params;
+        await prisma.user.delete({
+            where: {id: parseInt(id)}
+        });
+        res.json(`User with ID: ${id} has been deleted`)
+    } catch (error) {
+        console.error('error deleting user: ', error);
+    }
+};
 
 exports.createLead = async (req,res) => {
     const { name, 

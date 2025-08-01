@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import FilterBar from '../../../Common/Utils/FilterBar';
+import useFilterSort from '../../../Common/Hooks/useFilterSort';
+import SearchBar from '../../../Common/Utils/SearchBar';
 
 const HOST = 'http://localhost:4004/admin/leads/';
 {/*
-  - [] count
-  - [] filter (technique/occupation/opportunity progression)
+  - [x] count
+  - [x] filter (technique/occupation/opportunity progression)
   - [] opportunity tracker (contacted, joined, declined)
-  - [] sort (newest -> oldest)
+  - [x] sort (newest -> oldest)
+  - [x] searchbar 
   - [] change views (table/cells)
 */}
 export default function LeadGrid() {
@@ -91,14 +95,54 @@ export default function LeadGrid() {
     }
   };
 
+  // ------------------------------------
+  // Section: Filtering & Sorting Setup
+  // ------------------------------------
+  // useFilterSort returns:
+  //   filteredData: Array, --> Data after filtering, searching, & sorting
+  //   filters: Object,   -->  Current filter values per field
+  //   setFilters: Function,   -->  Update filters
+  //  sortDirection: string,   -->    Current sort direction
+  //   setSortDirection: Function, --> Toggle sort direction
+  //  searchQuery: string,   -->   Current search string
+  //   setSearchQuery: Function  -->  Set search string
+  const {
+    filteredData,
+    filters,
+    setFilters,
+    sortDirection,
+    setSortDirection,
+    searchQuery,
+    setSearchQuery
+  } = useFilterSort(
+      leads,
+      ['technique','services'], // fileds to filter by
+      ['full_name','email'],
+      'submitted_at', //date parameter that will be automatically detected inside component
+      'desc'                                    //default sort (newest first)
+    );
+
+
   return (
     <div style={styles.gridContainer}>
+
       <div>
-        count: {leads.length}
-        <button>Filter</button>
-        <button>Sort</button>
+        <h2>Count: {filteredData.length}</h2>
+        <button onClick={()=> setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}>
+          Sort by Date: {sortDirection === 'asc' ? 'Oldest' : 'Newest'}
+        </button>
       </div>
-      {leads.map(lead => (
+
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+      <FilterBar
+        data = {leads}
+        filters= {filters}
+        setFilters={setFilters}
+        fieldsToFilter={['technique', 'services']}
+      />
+
+      {filteredData.map(lead => (
         <div key={lead.id} style={styles.card}>
           {editingLead === lead.id ? (
             <>

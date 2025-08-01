@@ -5,6 +5,7 @@ import axios from 'axios';
 {/*
   - [] set and view goals
   - [] edit account info
+  - [] reset password
 */}
 
 const AccountDetails = () => {

@@ -1,43 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import FilterBar from '../../../Common/Utils/FilterBar';
+import useFilterSort from '../../../Common/Hooks/useFilterSort';
+import SearchBar from '../../../Common/Utils/SearchBar';
 
 const HOST = 'http://localhost:4004/admin/posts/';
 
 {/*
-  - [] add filter (type/audience/category)
-  - [] sort (oldest -> newest)
-  - [] stats (counts of each)
+  - [x] add filter (type/audience/category)
+  - [x] sort (oldest -> newest)
+  - [x] stats (counts of each)
+  - [x] search
   - [] change views (table/cells)
 */}
 
 export default function Posts() {
-  // Form visibility state
-  const [showForm, setShowForm] = useState(false);
+  // -------------------------
+  // Section: Form Visibility
+  // -------------------------
+  const [showForm, setShowForm] = useState(false); // toggle between feed and form view
 
-  // Posts state and fetch
-  const [posts, setPosts] = useState([]);
+  // -----------------------
+  // Section: Data Fetching
+  // -----------------------
+  const [posts, setPosts] = useState([]); // raw posts array
   const fetchPosts = async () => {
     try {
       const response = await axios.get(HOST);
+      // response.data.data expected to be array of posts
       setPosts(response.data.data);
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
   };
-
+  // fetch on component mount
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  // Form fields state
+  // ----------------------------------
+  // Section: Create / Edit Form State
+  // ----------------------------------
+  // Creating a new post fields
   const [title, setTitle] = useState('');
   const [type, setType] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState([]);
   const [audience, setAudience] = useState([]);
 
-  // updating post states
-  const [editingPost, setEditingPost] = useState(null);
+  // Editing an existing post
+  const [editingPost, setEditingPost] = useState(null); // hold post.id if editing
   const [updatedPost, setUpdatedPost] = useState({
     title: '',
     type: '',
@@ -46,6 +58,7 @@ export default function Posts() {
     audience: []
   });
 
+  // initialize form for editing
   const startEditing = (post) => {
     setEditingPost(post.id);
     setShowForm(true);
@@ -58,32 +71,33 @@ export default function Posts() {
     });
   };
 
-  // const handleChange = (e) => {
-  //   const {name, value} = e.target;
-  //   setUpdatedPost(prev => ({...prev, [name]: value}));
-  // }
-
+  // helper for checkbox fields
   const handleCheckboxChange = (e, setter, arr) => {
     const { value, checked } = e.target;
     setter(checked ? [...arr, value] : arr.filter(i => i !== value));
   };
 
+  // ----------------------
+  // Section: CRUD Handlers
+  // ----------------------
+
+  // Update existing post via PUT
   const updatePost = async (id) => {
     try {
-      await axios.put(`${HOST}${id}`, updatedPost, {
-        //headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
-      })
+      await axios.put(`${HOST}${id}`, updatedPost);
       alert('Post updated');
-      setEditingPost(null);
-      setShowForm(false);
-      fetchPosts();
+      setEditingPost(null);    // exit edit mode
+      setShowForm(false);      // hide form
+      fetchPosts();            // refresh feed
     } catch (error) {
       console.error('update failed: ', error);
-      alert(`failed to update post: ${id}`)
+      alert(`Failed to update post: ${id}`);
     }
-  }
+  };
 
+  // Create new post via POST
   const addPost = async () => {
+    // basic validation
     if (!title || !type || !content) {
       alert('Please fill out title, type, and content');
       return;
@@ -91,6 +105,7 @@ export default function Posts() {
     try {
       await axios.post(HOST, { title, type, content, category, audience });
       alert('Post added');
+      // reset form fields
       setTitle(''); setType(''); setContent('');
       setCategory([]); setAudience([]);
       setShowForm(false);
@@ -101,151 +116,193 @@ export default function Posts() {
     }
   };
 
+  // Delete a post via DELETE
   const deletePost = async (id) => {
     if (!window.confirm('Delete this Post?')) return;
     try {
-      await axios.delete(`${HOST}${id}`, {
-        //headers:
-      });
+      await axios.delete(`${HOST}${id}`);
+      // remove locally without re-fetch
       setPosts(prev => prev.filter(p => p.id !== id));
     } catch (error) {
       console.error('Unable to delete post: ', error);
       alert('Failed to delete Post');
     }
-  }
+  };
 
+  // ------------------------------------
+  // Section: Filtering & Sorting Setup
+  // ------------------------------------
+  // useFilterSort returns:
+  //   filteredData: Array, --> Data after filtering, searching, & sorting
+  //   filters: Object,   -->  Current filter values per field
+  //   setFilters: Function,   -->  Update filters
+  //  sortDirection: string,   -->    Current sort direction
+  //   setSortDirection: Function, --> Toggle sort direction
+  //  searchQuery: string,   -->   Current search string
+  //   setSearchQuery: Function  -->  Set search string
+   const {
+    filteredData,
+    filters,
+    setFilters,
+    sortDirection,
+    setSortDirection,
+    searchQuery,
+    setSearchQuery
+  } = useFilterSort(
+      posts,
+      ['type','category','audience'], // fields to filter by
+      ['title', 'content'],
+      'created_at',
+      'desc'                          // default sort (newest first)
+  );
+
+  // --------------------------------
+  // Section: Render JSX
+  // --------------------------------
   return (
     <div>
+      {/* Page Title */}
       <h1>Announcements & Promos</h1>
 
+      {/* Stats & Sort Toggle */}
       <div>
-        <h1>
-          count: {posts.length}
-        </h1>
-        <button>Filter</button>
-        <button>Sort</button>
+        <h2>Count: {filteredData.length}</h2> {/* show number of filtered posts */}
+        {/* toggle between ascending/descending by created_at */}
+        <button onClick={() => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}>
+          Sort by Date: {sortDirection === 'asc' ? 'Oldest' : 'Newest'}
+        </button>
       </div>
 
-      {/* Toggle form visibility */}
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+      {/* FilterBar: dropdowns for type, category, audience */}
+      <FilterBar
+        data={posts}
+        filters={filters}
+        setFilters={setFilters}
+        fieldsToFilter={['type', 'category', 'audience']}
+      />
+
+      {/* Create/Edit Form Toggle */}
       {showForm ? (
-        <button onClick={() => setShowForm(false)}>Cancel</button>
+        <button onClick={() => { setShowForm(false); setEditingPost(null); }}>Cancel</button>
       ) : (
         <button onClick={() => setShowForm(true)}>Create Post</button>
       )}
 
-      {/* Conditionally render the form */}
+      {/* Conditionally show form for create or edit */}
       {showForm && (
         <div className='form-container'>
           <form onSubmit={e => { e.preventDefault(); editingPost ? updatePost(editingPost) : addPost(); }}>
+            {/* Title Input */}
             <div>
               <label>Title</label>
-              <input value={
-                editingPost ? updatedPost.title: title} 
-                onChange={e => 
-                editingPost ? setUpdatedPost((prev)=> ({...prev, title: e.target.value}))
-                : setTitle(e.target.value)} required />
+              <input
+                value={editingPost ? updatedPost.title : title}
+                onChange={e => editingPost
+                  ? setUpdatedPost(prev => ({ ...prev, title: e.target.value }))
+                  : setTitle(e.target.value)}
+                required
+              />
             </div>
 
+            {/* Content Textarea */}
             <div>
               <label>Content</label>
-              <textarea value={ editingPost ? updatedPost.content  : content} 
-              onChange={e => 
-              editingPost ? setUpdatedPost((prev)=> ({...prev, content: e.target.value}))
-              : setContent(e.target.value)} required />
+              <textarea
+                value={editingPost ? updatedPost.content : content}
+                onChange={e => editingPost
+                  ? setUpdatedPost(prev => ({ ...prev, content: e.target.value }))
+                  : setContent(e.target.value)}
+                required
+              />
             </div>
 
+            {/* Type Dropdown */}
             <div>
               <label>Type</label>
-              <select value={ editingPost ? updatedPost.type : type} 
-              onChange={e => 
-              editingPost 
-              ? setUpdatedPost((prev) => ({...prev, type: e.target.value}))
-              : setType(e.target.value)} required>
+              <select
+                value={editingPost ? updatedPost.type : type}
+                onChange={e => editingPost
+                  ? setUpdatedPost(prev => ({ ...prev, type: e.target.value }))
+                  : setType(e.target.value)}
+                required
+              >
                 <option value='' disabled>Select…</option>
                 <option value='Announcement'>Announcement</option>
                 <option value='Promotion'>Promotion</option>
               </select>
             </div>
 
+            {/* Category Checkboxes */}
             <div>
               <label>Category</label>
               {['teaching','coaching','performing'].map(opt => {
+                // determine current array and setter based on create vs edit mode
                 const current = editingPost ? updatedPost.category : category;
                 const setter = editingPost
-                ? (val) => setUpdatedPost((prev)=> ({...prev, category: val}))
-                : setCategory;
+                  ? val => setUpdatedPost(prev => ({ ...prev, category: val }))
+                  : setCategory;
                 return (
-                <label key={opt}>
-                  <input
-                    type='checkbox'
-                    value={opt}
-                    checked={current.includes(opt)}
-                    onChange={e => handleCheckboxChange(e, setter, current)}
-                  />
-                  {opt}
-                </label>
+                  <label key={opt}>
+                    <input
+                      type='checkbox'
+                      value={opt}
+                      checked={current.includes(opt)}
+                      onChange={e => handleCheckboxChange(e, setter, current)}
+                    />
+                    {opt}
+                  </label>
                 );
               })}
             </div>
 
+            {/* Audience Checkboxes */}
             <div>
               <label>Audience</label>
-              {['students','choreographers','everyone'].map(opt => {
+              {['students','choreographers'].map(opt => {
                 const current = editingPost ? updatedPost.audience : audience;
                 const setter = editingPost
-                ? (val) => setUpdatedPost((prev) => ({...prev, audience: val}))
-                : setAudience;
-                return ( 
-                <label key={opt}>
-                  <input
-                    type='checkbox'
-                    value={opt}
-                    checked={current.includes(opt)}
-                    onChange={e => handleCheckboxChange(e, setter, current)}
-                  />
-                  {opt}
-                </label>
+                  ? val => setUpdatedPost(prev => ({ ...prev, audience: val }))
+                  : setAudience;
+                return (
+                  <label key={opt}>
+                    <input
+                      type='checkbox'
+                      value={opt}
+                      checked={current.includes(opt)}
+                      onChange={e => handleCheckboxChange(e, setter, current)}
+                    />
+                    {opt}
+                  </label>
                 );
               })}
             </div>
 
-            <button type='submit'>
-              {editingPost ? 'Update Post' : 'Publish'}
-            </button>
-            <button 
-              type='button'
-              onClick={()=> {
-                setShowForm(false);
-                setEditingPost(null);
-              }}
-            >
-              Cancel
-            </button>
+            {/* Submit & Cancel Buttons */}
+            <button type='submit'>{editingPost ? 'Update Post' : 'Publish'}</button>
+            <button type='button' onClick={() => { setShowForm(false); setEditingPost(null); }}>Cancel</button>
           </form>
         </div>
       )}
 
-      {/* Feed */}
+      {/* Posts Feed */}
       <div className='feed-container'>
         <div className='post-container'>
-          {posts.map(post => (
+          {filteredData.map(post => (
             <div key={post.id}>
+              {/* Post details */}
               <h2>{post.title}</h2>
               <h3>{post.type}</h3>
               <h4>{post.content}</h4>
 
-              <p>
-                Created: {new Date(post.created_at).toLocaleString()}
-              </p>
+              {/* Timestamps */}
+              <p>Created: {new Date(post.created_at).toLocaleString()}</p>
+              {post.updated_at && <p>Last Updated: {new Date(post.updated_at).toLocaleString()}</p>}
 
-              {post.updated_at && (
-                <p>
-                  Last Updated: {new Date(post.updated_at).toLocaleString()}
-                </p>
-              )}    
-
-              <button onClick={()=> startEditing(post)}>edit</button>
-              <button onClick={() => deletePost(post.id)}>delete</button>
+              {/* Action buttons */}
+              <button onClick={() => startEditing(post)}>Edit</button>
+              <button onClick={() => deletePost(post.id)}>Delete</button>
             </div>
           ))}
         </div>
