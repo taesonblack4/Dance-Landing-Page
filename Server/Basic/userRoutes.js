@@ -15,7 +15,7 @@ const {
 } = require('./userControllers');
 
 /* Fetch Routes */
-router.get('/users', getUsers); // get all users
+router.route('/users').get(getUsers).post(createUser); // get all users
 //if i removed the '/basic' then the user login fails due to missing ID
 router.get('/basic/users/:id', getUser); //get single user
 router.get('/users/me', authUser,getMe) // get signedin user

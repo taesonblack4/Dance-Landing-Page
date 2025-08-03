@@ -6,14 +6,18 @@ import axios from 'axios';
   - [] set and view goals
   - [] edit account info
   - [] reset password
+  - [] delete account
 */}
 
 const AccountDetails = () => {
-
   const {user, loading} = useContext(UserContext);
   if(loading) return <p>Loading account details...</p>
   if(!user) return <p>Unable to load user...</p>;
   return (
+    <>
+    <button>Profile Information</button>
+    <button>Goals</button>
+    <button>Delete Account</button>
     <div>
       <h2>Welcome, {user.username}</h2>
       <p>Email: {user.email}</p>
@@ -26,6 +30,7 @@ const AccountDetails = () => {
       <p>technique: </p>
       <p>experience: {user.experience}</p>
     </div>
+    </>
   )
 }
 
