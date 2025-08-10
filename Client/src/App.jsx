@@ -18,6 +18,7 @@ import AccountDetails from './components/private/User/components/AccountDetails'
 import Announcements from './components/private/User/components/Announcements';
 import Promos from './components/private/User/components/Promos';
 import Scheduling from './components/private/User/components/Scheduling';
+import GoalsPage from './components/private/User/components/GoalsPage';
 
 
 // Import private  components
@@ -87,6 +88,7 @@ function App() {
         <Route path="/signup/register" element={<Registration onSignUp={() => setIsUser(true)}/>} />
         <Route path="/admin/login" element={<AdminLogin onLogin={() => setIsAdmin(true)} />} />
         <Route path="/login-hub" element={<LoginHub />}/>
+        
 
         {/* Protected User Area */} 
         {/* Use replace on redirects (especially auth redirects) 
@@ -102,6 +104,7 @@ function App() {
             ) : <Navigate to="/user-login" replace />
           }
         >
+
           {/* /user */}
           <Route
             index
@@ -122,6 +125,12 @@ function App() {
             path="scheduling"
             element={<Scheduling />}
           />
+          {/* /user/goals */}
+          <Route 
+          path="goals"
+          element={<GoalsPage/>}
+          />
+          
           {/* /user/account */}
           <Route
             path="account"
