@@ -38,7 +38,7 @@ exports.getUser = async (req,res,next) => {
 
 exports.getMe = async (req, res) => {
     try {
-        const userId = req.user.userId; // from JWT payload
+        const userId = req.userId // from JWT payload
         const user = await prisma.user.findUnique({
             where: { id: userId }
         });
@@ -188,26 +188,28 @@ exports.getAllGoals = async (req,res) => {
 
 exports.getMyGoals = async (req,res) => {
     try {
-        const {userID} = req.params;
-        if(!userID) {
-            return res.status(400).json({error: 'Missing ID'})
+        const userId = req.userId
+        if(!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthenticated' });
         }
         const goals = await prisma.goal.findMany({
-            where: {userId: parseInt(userID)}
+            where: {userId: parseInt(userId)},
+            orderBy: {updated_at: 'desc'}
         })
 
         res.json({success: true, data: goals})
     } catch (error) {
-        console.error('failed fetching User goals', error)
+        console.error('failed fetching User goals', error);
+        return res.status(500).json({ success: false, message: 'Error fetching goals' });
     }
 }
 
 exports.createGoal = async (req,res) => {
     try {
-        const {userID} = req.params;
+        const userId = req.userId
 
-        if(!userID) {
-            return res.status(400).json({error: 'missing ID'})
+        if(!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthenticated' });
         }
 
         const {
@@ -227,22 +229,23 @@ exports.createGoal = async (req,res) => {
                 description,
                 status,
                 category,
-                userId: parseInt(userID),
+                userId: parseInt(userId),
             }
         })
 
-        res.json(goal);
+        return res.status(201).json({ success: true, data: goal });
     } catch (error) {
-       console.error('error creating goal: ', error) 
+       console.error('error creating goal: ', error);
+       return res.status(500).json({ success: false, message: 'Error creating goal' });
     }
 };
 
 exports.updateGoal = async (req,res) => {
     try {
-        const {goalID} = req.params;
-        if(!goalID){
-            return res.status(400).json({error: 'missing ID'})
-        }
+        const goalID = parseInt(req.params.goalID);
+        const userId = req.userId;
+        if (!goalID) return res.status(400).json({ success: false, message: 'Missing goal ID' });
+        if (!userId) return res.status(401).json({ success: false, message: 'Unauthenticated' });
 
         const {
             title,
@@ -260,12 +263,19 @@ exports.updateGoal = async (req,res) => {
         if (status) data.status = status;
         if (category) data.category = category;
         
-        const goal = await prisma.goal.update({
-            where: {id: parseInt(goalID)},
+        const result = await prisma.goal.update({
+            where: {id: goalID, userId: parseInt(userId)},
             data
         })
 
-        res.json({success: true, data: goal});
+        if (result.count === 0) {
+            return res.status(404).json({ success: false, message: 'Goal not found or not owned by user' });
+        }
+
+        const updatedGoal = await prisma.goal.findUnique({ 
+            where: { id: goalID } 
+        });
+        return res.json({ success: true, data: updatedGoal });
         
     } catch (error) {
         console.error('failed to update goal: ', error);
@@ -275,17 +285,17 @@ exports.updateGoal = async (req,res) => {
 
 exports.deleteGoal = async (req, res) => {
   try {
-    const { goalID, userID } = req.params;
+    const goalID = parseInt(req.params.goalID);
+    const userId = req.userId
 
-    if (!goalID) {
-      return res.status(400).json({ success: false, message: 'Missing goal ID' });
-    }
+    if (!goalID) return res.status(400).json({ success: false, message: 'Missing goal ID' });
+    if (!userId) return res.status(401).json({ success: false, message: 'Unauthenticated' });
 
     // Optional: enforce user ownership if your schema has userId
     const deletedGoal = await prisma.goal.deleteMany({
       where: {
-        id: parseInt(goalID),
-        userId: parseInt(userID) // comment this out if not enforcing ownership
+        id: goalID,
+        userId: parseInt(userId) // comment this out if not enforcing ownership
       }
     });
 
@@ -300,3 +310,28 @@ exports.deleteGoal = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error deleting goal', error });
   }
 };
+
+exports.getUserDashbaord = async (req,res) => {
+
+    try {
+        const userId = req.user.id; // from auth middleware which decodes JWT
+        if(!userId) {
+            return res.status(401).json({success: false})
+        }
+
+        const activeGoals = await prisma.goal.findMany({
+            where: {userId, status: {not: 'completed'} },
+            orderBy: {updated_at: 'desc'},
+            take: 3
+        })
+
+        const latestPost = await prisma.post.findFirst({
+            orderBy: {created_at: 'desc'}
+        })
+
+        res.json({activeGoals, latestPost});
+    } catch (error) {
+        console.error('error fetching User Dashboard:', error);
+        res.status(500).json({success:false, message: 'Failed to load Dashboard', error: error.message})
+    }
+}

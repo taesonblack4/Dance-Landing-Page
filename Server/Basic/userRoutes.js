@@ -17,6 +17,7 @@ const {
     getMyGoals, //fetch goals from signedin user
     updateGoal, //update goal from enrolled user
     deleteGoal, //delete goal from enrolled user
+    getUserDashbaord //user dashbaord data 
 } = require('./userControllers');
 
 router.route('/users').get(getUsers).post(createUser);
@@ -24,9 +25,9 @@ router.route('/users').get(getUsers).post(createUser);
 //if i removed the '/basic' then the user login fails due to missing ID
 router.get('/basic/users/:id', getUser);
 router.get('/users/me', authUser,getMe);
-
+router.get('/users/me/dashboard', authUser, getUserDashbaord);
 router.get('/users/goals', getAllGoals);
-//router.get('/users/:userID/goals', getMyGoals);
+
 
 router.get('/posts', getPosts)
 router.get('/posts/announcements', getAnnouncements);
@@ -34,8 +35,10 @@ router.get('/posts/promos', getPromotions);
 
 router.post('/leads', createLead);
 
-router.route('/users/:userID/goals',authUser).get(getMyGoals).post(createGoal);
-router.route('/users/:userID/goals/:goalID').put(updateGoal).delete(deleteGoal);
+
+router.route('/users/me/goals').all(authUser).get(getMyGoals).post(createGoal);
+
+router.route('/users/me/goals/:goalID').all(authUser).put(updateGoal).delete(deleteGoal);
 
 router.route('/users/:id').put(updateUser).delete(deleteUser);
 

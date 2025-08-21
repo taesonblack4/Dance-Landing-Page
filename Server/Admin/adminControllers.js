@@ -1,6 +1,11 @@
 const prisma = require('../prisma/client');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const {
+    startOfWeek,
+    endOfWeek,
+    startOfDay,
+    endOfDay
+} = require('date-fns')
 
 exports.getAdmins = async (req,res) => {
     const users = await prisma.super.findMany();
@@ -150,5 +155,62 @@ exports.deletePost = async (req,res) => {
         console.error('error deleting post: ', error);
     }
 }
+
+exports.getAdminDashboard = async (req,res) => {
+    try {
+        const now = new Date();
+
+        //compute boundaries , week starts on the Monday of the current date (1 = Monday)
+        const weekStart = startOfWeek(now,{weekStartsOn: 1});
+        const weekEnd = endOfWeek(now, {weekStartsOn: 1});
+        const todayStart = startOfDay(now);
+        const todayEnd = endOfDay(now);
+
+        // Queries
+        const [
+            usersThisWeek,
+            leadsThisWeek,
+            userCount,
+            leadCount,
+            latestPost
+        ] = await Promise.all([
+            /*
+             created_at: {
+                gte: weekStart, // created_at >= weekStart
+                lte: weekEnd    // created_at <= weekEnd
+            }
+             */
+            //count all the users created this week , using (User.creationDate)
+            prisma.user.count({
+                where: {creationDate: {gte: weekStart, lte: weekEnd}}
+            }),
+            //count all the leads created this week , using (Leads.submitted_at)
+            prisma.leads.count({
+                where: {submitted_at: {gte: weekStart, lte: weekEnd}}
+            }),
+            //total users
+            prisma.user.count(),
+            //total leads
+            prisma.leads.count(),
+            //latest post
+            prisma.post.findFirst({
+                orderBy: {created_at: 'desc'},
+                take: 1
+            })
+        ]);
+
+        res.json({
+            usersThisWeek,
+            leadsThisWeek,
+            userCount,
+            leadCount,
+            latestPost
+        })
+
+    } catch (err) {
+        console.error('error fetching Admin Dashboard: ', err);
+        res.status(500).json({success: false, message: 'Failed to load Dashboard', error: err.message});
+    }
+};
 
 

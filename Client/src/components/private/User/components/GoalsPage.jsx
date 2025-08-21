@@ -96,25 +96,36 @@ const GoalsPage = () => {
   // State to track loading status for UI feedback
   const [loading, setLoading] = useState(true);
 
-  const HOST = `http://localhost:4004/basic/users/${user.id}/goals`;
+  const HOST = `http://localhost:4004/basic/users/me/goals`;
 
   const fetchGoals = async () => {
   try {
-    const response = await axios.get(HOST);
-    setGoals(response.data.data);
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('No Token');
+
+    const response = await axios.get(HOST, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    // server returns { success: true, data: [...] }
+    const goals = response.data?.data ?? [];
+    console.log('fetched goals:', goals);
+    setGoals(goals);
   } catch (err) {
-    // Log any error fetching goals
     console.error('Error fetching goals:', err);
+    setGoals([]); // fallback
   } finally {
-    // Toggle loading off after attempt completes (success or fail)
     setLoading(false);
   }
 };
 
   useEffect( () => {
-    if (user) fetchGoals();}, [user]); // Dependency array: rerun effect if 'user' changes
+    if (user) fetchGoals();
+  }, [user]); // Dependency array: rerun effect if 'user' changes
 
   const addGoal = async () => {
+    const token = localStorage.getItem('accessToken')
+
     const {title, description, category, status} = goalData;
 
     if(!title || !description || !status || !category) {
@@ -123,19 +134,15 @@ const GoalsPage = () => {
     }
 
     try {
-      await axios.post(HOST, goalData);
+      await axios.post(HOST, goalData, {
+        headers: {Authorization: `Bearer ${token}`}
+      });
       alert('Goal Created');
 
-      //reset fields
-      setGoalData({    
-        title: '',
-        description: '',
-        category: '',
-        status: ''
-      });
       //Refresh goals list
       await fetchGoals(); 
       setShowForm(false); // close form after submission
+      setGoalData({title: '', description: '', category: '', status: ''}); //reset fields
     } catch (error) {
       console.log('error adding goal: ', error);
       alert('Failed to create Goal');
@@ -143,11 +150,14 @@ const GoalsPage = () => {
   };
 
   const updateGoal = async (id) => {
+    const token = localStorage.getItem('accessToken')
     try {
-      await axios.put(`${HOST}/${id}`, updatedGoal);
+      await axios.put(`${HOST}/${id}`, updatedGoal, {
+        headers: {Authorization: `Bearer ${token}`}
+      });
       setEditingGoal(null);
       // re-fetch to reflect changes
-      fetchGoals();
+      await fetchGoals();
       setShowForm(false);
     } catch (error) {
       console.error('update fail: ', error);
@@ -156,9 +166,14 @@ const GoalsPage = () => {
   };
 
   const deleteGoal = async (id) => {
+    const token = localStorage.getItem('accessToken');
+
     if(!window.confirm('Delete this Goal?')) return;
+
     try {
-      await axios.delete(`${HOST}/${id}`);
+      await axios.delete(`${HOST}/${id}`, {
+        headers: {Authorization: `Bearer ${token}`}
+      });
       //refresh list
       setGoals(prev => prev.filter(goal => goal.id !== id))
     } catch (error) {
@@ -187,51 +202,61 @@ const GoalsPage = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    addGoal()
+    addGoal();
   }
 
 
   // While data is loading, show loading message
   if (loading) return <p>Loading goals...</p>;
-  // If no goals found, prompt user to add some
-  {!goals.length && <p>No goals found. Add some goals!</p>}
 
   // Render the list of goals with their details
   return (
     <div>
       {/* Display user's full name dynamically */}
-      <h1>{user.full_name}'s Goals</h1>
+      <h1>{user?.full_name}'s Goals</h1>
 
       <button onClick={()=> setShowForm(!showForm)}>
         {showForm ? 'Close Form' : 'Add Goal'}
       </button>
 
-      {showForm && !editingGoal && (
-      <GoalForm 
-        goalData={goalData}
-        handleChange={handleChange}
-        onSubmit={onSubmit}
-        onCancel={()=> setShowForm(false)}
-      />
-      )}
+      {(showForm || editingGoal) && (  // Render GoalForm if adding OR editing
+        <GoalForm
+          // Choose which data to show:
+          // If editingGoal is truthy → use updatedGoal (editing mode)
+          // Otherwise → use goalData (creating mode)
+          goalData={editingGoal ? updatedGoal : goalData}
 
-      {editingGoal && (
-      <GoalForm
-        goalData={updatedGoal}
-        handleChange={(e) => {
-          const { name, value } = e.target;
-          setUpdatedGoal(prev => ({ ...prev, [name]: value }));
-        }}
-        onSubmit={(e) => {
-        e.preventDefault();
-        updateGoal(editingGoal);
-        }}
-        onCancel={() => setEditingGoal(null)}
-      />
+          // Choose the correct change handler:
+          // If editing → update the updatedGoal state
+          // If adding → use the existing handleChange function
+          handleChange={editingGoal 
+            ? (e) => {
+                const { name, value } = e.target;
+                setUpdatedGoal(prev => ({ ...prev, [name]: value }));
+              }
+            : handleChange
+          }
+
+          // Decide what happens on submit:
+          // If editing → call updateGoal with the current editingGoal id
+          // If adding → use the existing onSubmit logic
+          onSubmit={(e) => {
+            e.preventDefault();
+            editingGoal ? updateGoal(editingGoal) : onSubmit(e);
+          }}
+
+          // Cancel behavior depends on mode:
+          // If editing → clear editingGoal state
+          // If adding → hide the form by toggling showForm to false
+          onCancel={() => {
+            editingGoal ? setEditingGoal(null) : setShowForm(false);
+          }}/>
       )}
 
       
-      {goals.map(goal => (
+      {goals.length === 0 ? ( 
+        <p>No goals found. Add some goals!</p> 
+      ): goals.map(goal => (
         <div key={goal.id}>
           <h3>{goal.title}</h3>
           <p>{goal.description}</p>
