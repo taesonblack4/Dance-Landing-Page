@@ -1,9 +1,9 @@
+
 import React, {useState, useEffect, useContext} from 'react';
 import { UserContext } from './UserContext';
-import axios from 'axios';
+
 
 {/*
-  - [] set and view goals
   - [] edit account info
   - [] reset password
   - [] delete account
@@ -13,11 +13,17 @@ const AccountDetails = () => {
   const {user, loading} = useContext(UserContext);
   if(loading) return <p>Loading account details...</p>
   if(!user) return <p>Unable to load user...</p>;
+  const [activeView, setActiveView] = useState(null);
+
+  console.log("User in AccountDetails:", user);
+
+
   return (
     <>
     <button>Profile Information</button>
-    <button>Goals</button>
     <button>Delete Account</button>
+
+  
     <div>
       <h2>Welcome, {user.username}</h2>
       <p>Email: {user.email}</p>

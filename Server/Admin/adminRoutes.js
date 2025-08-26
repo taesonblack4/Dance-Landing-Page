@@ -12,7 +12,8 @@ const {
     createPost,
     getPost,
     deletePost,
-    updatePost
+    updatePost,
+    getAdminDashboard
 } = require('./adminControllers');
 //COMMON
 const {getPosts, 
@@ -25,6 +26,7 @@ router.get('/users/',getAdmins);
 router.get('/leads/', authAdmin,getLeads);
 router.get('/posts',getPosts );
 router.get('/posts/:id', getPost);
+router.get('/dashboard/', authAdmin,getAdminDashboard);
 //CREATE
 router.post('/users/', createAdmin);
 router.post('/posts/', createPost);

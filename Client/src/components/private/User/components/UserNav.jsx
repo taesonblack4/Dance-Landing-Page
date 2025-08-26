@@ -1,4 +1,3 @@
-import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 const UserNav = () => {
@@ -19,6 +18,7 @@ const UserNav = () => {
                         <li><NavLink to= '/user/announcements'>Announcements</NavLink></li>
                         <li><NavLink to= '/user/promos'>Promos</NavLink></li>
                         <li><NavLink to= '/user/scheduling'>Scheduling</NavLink></li>
+                        <li><NavLink to= '/user/goals'>Goals</NavLink></li>
                         <li><NavLink to= '/user/account'>Account</NavLink></li>
                         <li><button onClick={handleLogout}>Logout</button></li>
                     </ul>

@@ -20,3 +20,13 @@ Content-Type: application/json
     "username": "thatguy",
     "password": "testpassword"
 }
+
+###
+POST http://localhost:4004/basic/users/goals
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIwLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NDc4MDA5NywiZXhwIjoxNzU0NzgzNjk3fQ.glAyqgxgRqaRbQtpoRjp7zcHSZdJ0yG3GTxzlzg5mJw
+Content-Type: application/json
+
+{
+    "title": "test goal",
+    "description": "this is  a test"
+}
