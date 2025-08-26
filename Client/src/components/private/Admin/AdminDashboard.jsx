@@ -1,5 +1,6 @@
 // Core React imports
 import React, { useState, useEffect } from 'react';
+import { AdminWidgets } from '../../Common/Widgets/DashboardWidgets';
 
 {/*
     - [] widgets 
@@ -15,6 +16,7 @@ const AdminDashboard = ({onLogout}) => {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Admin Dashboard</h2>
+            <AdminWidgets />
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import React , {useContext, useEffect, useState} from 'react';
 import { UserContext } from './components/UserContext';
+import { UserWidgets } from '../../Common/Widgets/DashboardWidgets';
 
 //view account information
 //delete and update account
@@ -31,6 +32,7 @@ const UserDashboard = () => {
     <div>
       <h1>User Dashboard</h1>
       <h2>welcome {user.full_name}!</h2>
+      <UserWidgets />
     </div>
   )
 }
