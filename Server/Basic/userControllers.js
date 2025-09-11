@@ -81,9 +81,10 @@ exports.createUser = async (req,res,next) => {
     }
 
 };
-
+//cant get id to register for updating
 exports.updateUser = async (req,res) => {
-    const { id } = req.params;
+    const userId = req.userId;
+   
     const { 
         full_name,
         email, 
@@ -97,20 +98,23 @@ exports.updateUser = async (req,res) => {
         technique
     } = req.body;
 
+    const data = {} //only update what new data is passed
+    if(full_name) data.full_name = full_name;
+    if(email) data.email = email;
+    if(phone_number) data.phone_number = phone_number;
+    if(title) data.title = title;
+    if(experience) data.experience = experience;
+    if(location) data.location = location;
+    if(birthday) data.birthday = new Date(birthday);
+    if(age) data.age = age;
+    if(services) data.services = services;
+    if(technique) data.technique = technique;
+
+
+
     const user = await prisma.user.update({
-        where: {id: parseInt(id)},
-        data: {
-            full_name,
-            email, 
-            phone_number, 
-            title,
-            experience,
-            location,
-            birthday: new Date(birthday),
-            age, 
-            services, 
-            technique
-        }
+        where: {id: parseInt(userId)},
+        data
     });
 
     res.json(user);

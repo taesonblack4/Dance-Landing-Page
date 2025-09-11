@@ -24,7 +24,7 @@ router.route('/users').get(getUsers).post(createUser);
 
 //if i removed the '/basic' then the user login fails due to missing ID
 router.get('/basic/users/:id', getUser);
-router.get('/users/me', authUser,getMe);
+//router.get('/users/me', authUser,getMe);
 router.get('/users/me/dashboard', authUser, getUserDashbaord);
 router.get('/users/goals', getAllGoals);
 
@@ -41,6 +41,7 @@ router.route('/users/me/goals').all(authUser).get(getMyGoals).post(createGoal);
 router.route('/users/me/goals/:goalID').all(authUser).put(updateGoal).delete(deleteGoal);
 
 router.route('/users/:id').put(updateUser).delete(deleteUser);
-
+// user updates themselves 
+router.route('/users/me').all(authUser).put(updateUser).get(getMe);
 
 module.exports = router;
