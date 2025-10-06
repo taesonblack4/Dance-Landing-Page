@@ -3,8 +3,9 @@ import axios from 'axios';
 import FilterBar from '../../../Common/Utils/FilterBar';
 import useFilterSort from '../../../Common/Hooks/useFilterSort';
 import SearchBar from '../../../Common/Utils/SearchBar';
+import {ADMIN_ROUTES} from '../../../Common/db-urls.js'
 
-const HOST = 'http://localhost:4004/admin/posts/';
+//const HOST = 'http://localhost:4004/admin/posts/';
 
 {/*
   - [x] add filter (type/audience/category)
@@ -26,7 +27,7 @@ export default function Posts() {
   const [posts, setPosts] = useState([]); // raw posts array
   const fetchPosts = async () => {
     try {
-      const response = await axios.get(HOST);
+      const response = await axios.get(ADMIN_ROUTES.allPosts);
       // response.data.data expected to be array of posts
       setPosts(response.data.data);
     } catch (error) {
@@ -84,7 +85,7 @@ export default function Posts() {
   // Update existing post via PUT
   const updatePost = async (id) => {
     try {
-      await axios.put(`${HOST}${id}`, updatedPost);
+      await axios.put(ADMIN_ROUTES.postById(id), updatedPost);
       alert('Post updated');
       setEditingPost(null);    // exit edit mode
       setShowForm(false);      // hide form
@@ -103,7 +104,7 @@ export default function Posts() {
       return;
     }
     try {
-      await axios.post(HOST, { title, type, content, category, audience });
+      await axios.post(ADMIN_ROUTES.allPosts, { title, type, content, category, audience });
       alert('Post added');
       // reset form fields
       setTitle(''); setType(''); setContent('');
@@ -120,7 +121,7 @@ export default function Posts() {
   const deletePost = async (id) => {
     if (!window.confirm('Delete this Post?')) return;
     try {
-      await axios.delete(`${HOST}${id}`);
+      await axios.delete(ADMIN_ROUTES.postById(id));
       // remove locally without re-fetch
       setPosts(prev => prev.filter(p => p.id !== id));
     } catch (error) {

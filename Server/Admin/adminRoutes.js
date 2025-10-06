@@ -13,12 +13,11 @@ const {
     getPost,
     deletePost,
     updatePost,
-    getAdminDashboard
+    getAdminDashboard,
+    deleteUserById
 } = require('./adminControllers');
 //COMMON
-const {getPosts, 
-    getAnnouncements, 
-    getPromotions
+const {getPosts,
 } = require('../Basic/userControllers');
 
 //FETCH
@@ -36,6 +35,7 @@ router.put('/posts/:id', updatePost)
 //DELETE
 router.delete('/leads/:id', authAdmin,deleteLead);
 router.delete('/posts/:id', deletePost);
+router.delete('/users/:id', authAdmin, deleteUserById);
 
 
 

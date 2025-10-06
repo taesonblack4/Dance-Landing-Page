@@ -2,14 +2,16 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { UserContext } from './UserContext';
 import UserForm from '../../../Common/Auth/UserForm';
+import axios from 'axios';
+import {USER_ROUTES} from '../../../Common/db-urls';
 
 
 {/*
-  - [] edit account info
+  - [x] edit account info 
   - [] reset password
-  - [] delete account
+  - [x] delete account
 */}
-
+// update user info happens after refresh
 const AccountDetails = () => {
   const {user, loading} = useContext(UserContext);
 
@@ -21,6 +23,32 @@ const AccountDetails = () => {
 
   console.log("User in AccountDetails:", user);
 
+  const deleteUser = async (id) => {
+    if(!id) {
+      alert('No user ID found for deletion');
+      return;
+    }
+    try {
+      const confirmDelete = window.confirm('Are you sure you want to delete your account?');
+      if(!confirmDelete) return;
+      const token = localStorage.getItem('accessToken');
+      if(!token) {
+        alert('No access token found. Please log in again.');
+        return;
+      }
+      alert
+      await axios.delete(USER_ROUTES.me, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      // Optionally, you might want to log the user out or redirect after deletion
+      alert('Account deleted successfully');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again later.');
+    }
+  }
 
   return (
     <div>
@@ -35,8 +63,17 @@ const AccountDetails = () => {
           <p>Location: {user.location}</p>
           <p>Birthday: {new Date(user.birthday).toLocaleDateString()}</p>
           <p>Age: {user.age}</p>
-          <p>title: {user.title}</p>
-          <p>technique:</p>
+          <p>title: <ul>
+            {Array.isArray(user.title) && user.title.map((occupation, i) => (
+              <li key={i}>{occupation}</li>
+            ))}
+          </ul></p>
+          <p>Techniques:</p>
+          <ul>
+            {Array.isArray(user.technique) && user.technique.map((tech, i) => (
+              <li key={i}>{tech}</li>
+            ))}
+          </ul>
           <p>experience: {user.experience}</p>
 
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
@@ -46,7 +83,11 @@ const AccountDetails = () => {
         onCancel={() => setIsEditing(false)}
         onSuccess={() => setIsEditing(false)} />
       )}
-
+      {/* Future Features */}
+      {/* <button onClick={() => setActiveView('resetPassword')}>Reset Password</button>
+      <button onClick={() => setActiveView('deleteAccount')}>Delete Account</button> */}
+      <button>Reset Password</button>
+      <button onClick={()=> deleteUser(user.id)}>Delete Account</button>
       </>
     </div>
   )

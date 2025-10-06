@@ -15,13 +15,11 @@ import { UserWidgets } from '../../Common/Widgets/DashboardWidgets';
   - [] leave site feedback
   - [] view FAQs
   - [] widgets
-      [] current goals
+      [x] current goals
       [] inquiry box
       [] leave feedback on last appt
       [] recent activity (latest promo/announcement)
 */}
-
-const HOST = `http://localhost:4004/basic/users/me`;
 
 const UserDashboard = () => {
   const {user, loading} = useContext(UserContext)

@@ -1,0 +1,71 @@
+/* Container grid for dashboard widgets */
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* Card base styling */
+.card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  min-width: 200px;
+  min-height: 86px;
+}
+
+/* Card label (small header at the top of cards) */
+.card-label {
+  font-size: 12px;
+  opacity: 0.7;
+  color: black;
+}
+
+/* Card main value (big red numbers or counts) */
+.card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: red;
+}
+
+/* Card title (bold text for posts, goals, etc.) */
+.card-title {
+  font-weight: 700;
+  color: black;
+  margin-top: 6px;
+}
+
+/* Card subtext (smaller description under the title) */
+.card-subtext {
+  font-size: 13px;
+  margin-top: 6px;
+  color: black;
+}
+
+/* Metadata text (e.g. "Posted on …") */
+.card-meta {
+  margin-top: 8px;
+  font-size: 11px;
+  opacity: 0.6;
+  color: black;
+}
+
+/* Empty state for widgets with no items */
+.card-empty {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Goal-specific item wrapper */
+.goal-item {
+  margin-top: 8px;
+}
+
+/* Goal status line (red + small) */
+.goal-status {
+  font-size: 12px;
+  color: red;
+  margin-top: 4px;
+}

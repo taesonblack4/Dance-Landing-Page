@@ -95,7 +95,7 @@ enum GoalCategory {
 model Goal {
   id          Int           @id @default(autoincrement())
   userId      Int
-  user        User          @relation(fields: [userId], references: [id])
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
   description String
   status      GoalStatus    @default(in_progress)

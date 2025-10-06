@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { USER_ROUTES } from '../db-urls'
 
-const HOST = `http://localhost:4004/basic/users/me`;
+//const HOST = `http://localhost:4004/basic/users/me`;
 
-//issues with. updating user
-//cant get the id of user to update
+// Update happens after user logs out and logs back in or refreshes page,
+// checkboxes are being displayed of that already selected
 
 
 const UserForm = ({user, onCancel, onSuccess}) => { 
@@ -55,7 +56,7 @@ const UserForm = ({user, onCancel, onSuccess}) => {
         const token = localStorage.getItem('accessToken');
         if(!token) throw new Error('No Token');
 
-        await axios.put(HOST, userData, {
+        await axios.put(USER_ROUTES.me, userData, {
           headers: { Authorization: `Bearer ${token}` }
         })
         alert('Profile has been successfully updated')

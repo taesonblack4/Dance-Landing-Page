@@ -9,6 +9,7 @@ const {
     deleteUser, //delete enrolled user
     createLead, //create lead from contact form
     updateUser, //update enrolled user information
+    updateUserById, // registration controller to update user info by id without token
     getPosts, //fetch posts from admin
     getAnnouncements, //fetch posts with 'announcement' type
     getPromotions, //fetch posts with 'promotion' type
@@ -40,8 +41,8 @@ router.route('/users/me/goals').all(authUser).get(getMyGoals).post(createGoal);
 
 router.route('/users/me/goals/:goalID').all(authUser).put(updateGoal).delete(deleteGoal);
 
-router.route('/users/:id').put(updateUser).delete(deleteUser);
+router.route('/users/register/:id').put(updateUserById);
 // user updates themselves 
-router.route('/users/me').all(authUser).put(updateUser).get(getMe);
+router.route('/users/me').all(authUser).put(updateUser).get(getMe).delete(deleteUser);
 
 module.exports = router;

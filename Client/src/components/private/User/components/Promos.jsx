@@ -3,14 +3,15 @@ import axios from 'axios';
 import useFilterSort from '../../../Common/Hooks/useFilterSort';
 import SearchBar from '../../../Common/Utils/SearchBar';
 import FilterBar from '../../../Common/Utils/FilterBar';
+import { POST_ROUTES } from '../../../Common/db-urls';
 
-const HOST = 'http://localhost:4004/basic/posts/promos'
+//const HOST = 'http://localhost:4004/basic/posts/promos'
 
 const Promos = () => {
   const [posts,setposts] = useState([]);
   const fetchPosts = async () => {
     try {
-      const response  = await axios.get(HOST);
+      const response  = await axios.get(POST_ROUTES.promotions);
       console.log("Fetched posts:", response.data.data); //testing
       setposts(response.data.data);
     } catch (error) {
