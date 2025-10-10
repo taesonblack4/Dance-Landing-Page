@@ -18,7 +18,7 @@ import { UserWidgets } from '../../Common/Widgets/DashboardWidgets';
       [x] current goals
       [] inquiry box
       [] leave feedback on last appt
-      [] recent activity (latest promo/announcement)
+      [x] recent activity (latest promo/announcement)
 */}
 
 const UserDashboard = () => {
