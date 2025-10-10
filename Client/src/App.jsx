@@ -17,7 +17,7 @@ import UserLayout from './components/private/User/components/UserLayout';
 import AccountDetails from './components/private/User/components/AccountDetails';
 import Announcements from './components/private/User/components/Announcements';
 import Promos from './components/private/User/components/Promos';
-import Scheduling from './components/private/User/components/Scheduling';
+import Booking from './components/private/User/components/Booking';
 import GoalsPage from './components/private/User/components/GoalsPage';
 
 
@@ -120,10 +120,10 @@ function App() {
             path="promos"
             element={<Promos />}
           />
-          {/* /user/scheduling */}
+          {/* /user/booking */}
           <Route
-            path="scheduling"
-            element={<Scheduling />}
+            path="booking"
+            element={<Booking />}
           />
           {/* /user/goals */}
           <Route 
