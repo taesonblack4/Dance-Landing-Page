@@ -13,8 +13,9 @@ and then make user + loading available to any component under /user/*.
 
 import React, {createContext,useState,useEffect } from 'react'
 import axios from 'axios';
+import {USER_ROUTES} from '../../../Common/db-urls';
 
-const HOST = `http://localhost:4004/basic/users/me`;
+//const HOST = `http://localhost:4004/basic/users/me`;
 
 export const UserContext = createContext({
     user: null,
@@ -31,7 +32,7 @@ export function UserProvider({children}) {
                 const token = localStorage.getItem('accessToken');
                 if(!token) throw new Error('No Token');
 
-                const {data} = await axios.get(HOST, {
+                const {data} = await axios.get(USER_ROUTES.me, {
                     headers: {Authorization: `Bearer ${token}`}
                 });
                 console.log(data)

@@ -2,18 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import {USER_ROUTES} from '../db-urls'
 
 
 // Login component handling admin authentication
 const SignUp = () => {
     const navigate = useNavigate();
 
-    const HOST = 'http://localhost:4004/basic/users';
+    //const HOST = 'http://localhost:4004/basic/users';
 
     // State management for form fields and error messages
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState(''); // For confirming password
     const [error, setError] = useState('');
 
 
@@ -23,8 +24,13 @@ const SignUp = () => {
             password: password
         }
 
+        if(password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
         try {
-            const response = await axios.post(HOST, UserData, {
+            const response = await axios.post(USER_ROUTES.all, UserData, {
                 headers: {"Content-Type": "application/json"}
             });
 
@@ -61,6 +67,15 @@ const SignUp = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
+            />
+
+            {/* Confirm Password input field */}
+            <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 style={styles.input}
             />
             

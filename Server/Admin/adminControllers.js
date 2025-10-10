@@ -213,4 +213,19 @@ exports.getAdminDashboard = async (req,res) => {
     }
 };
 
+exports.deleteUserById = async (req,res) => {
+    try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({error: 'Missing user ID'});
+        }
+        await prisma.user.delete({
+            where: {id: parseInt(id)}
+        });
+        res.json(`User with ID: ${id} has been deleted`)
+    } catch (error) {
+        console.error('error deleting user: ', error);
+    }
+};
+
 

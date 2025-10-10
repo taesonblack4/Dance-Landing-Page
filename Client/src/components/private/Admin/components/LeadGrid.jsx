@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../../../../styles/private/Admin/LeadGrid.css'
 import FilterBar from '../../../Common/Utils/FilterBar';
 import useFilterSort from '../../../Common/Hooks/useFilterSort';
 import SearchBar from '../../../Common/Utils/SearchBar';
+import { ADMIN_ROUTES } from '../../../Common/db-urls';
 
-const HOST = 'http://localhost:4004/admin/leads/';
+//const HOST = 'http://localhost:4004/admin/leads/';
 {/*
   - [x] count
   - [x] filter (technique/occupation/opportunity progression)
@@ -31,7 +33,7 @@ export default function LeadGrid() {
         const token = localStorage.getItem('accessToken');
         if (!token) return window.location.href = '/admin/login';
 
-        const response = await axios.get(HOST, {
+        const response = await axios.get(ADMIN_ROUTES.allLeads, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLeads(response.data.data);
@@ -46,7 +48,7 @@ export default function LeadGrid() {
   const deleteLead = async (id) => {
     if (!window.confirm('Delete this lead?')) return;
     try {
-      await axios.delete(`${HOST}${id}`, {
+      await axios.delete(ADMIN_ROUTES.leadById(id), {
         headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
       });
       setLeads(prev => prev.filter(l => l.id !== id));
@@ -82,12 +84,12 @@ export default function LeadGrid() {
 
   const updateLead = async (id) => {
     try {
-      await axios.put(`${HOST}${id}`, updatedLead, {
+      await axios.put(ADMIN_ROUTES.leadById(id), updatedLead, {
         headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
       });
       setEditingLead(null);
       // Re-fetch to reflect changes
-      const resp = await axios.get(HOST, { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }});
+      const resp = await axios.get(ADMIN_ROUTES.allLeads, { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }});
       setLeads(resp.data.data);
     } catch (err) {
       console.error('Update failed:', err);
@@ -124,7 +126,7 @@ export default function LeadGrid() {
 
 
   return (
-    <div style={styles.gridContainer}>
+    <div className='gridContainer'>
 
       <div>
         <h2>Count: {filteredData.length}</h2>
@@ -143,7 +145,7 @@ export default function LeadGrid() {
       />
 
       {filteredData.map(lead => (
-        <div key={lead.id} style={styles.card}>
+        <div key={lead.id} className='lead-card'>
           {editingLead === lead.id ? (
             <>
               <input name="full_name" value={updatedLead.full_name} onChange={handleChange} />
@@ -192,19 +194,3 @@ export default function LeadGrid() {
   );
 }
 
-const styles = {
-  gridContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '20px',
-    padding: '20px'
-  },
-  card: {
-    background: '#222',
-    color: '#fff',
-    padding: '15px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-    border: '1px solid #444'
-  }
-};

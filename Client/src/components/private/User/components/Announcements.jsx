@@ -3,14 +3,15 @@ import axios from 'axios';
 import useFilterSort from '../../../Common/Hooks/useFilterSort';
 import SearchBar from '../../../Common/Utils/SearchBar';
 import FilterBar from '../../../Common/Utils/FilterBar';
+import { POST_ROUTES } from '../../../Common/db-urls';
 
-const HOST = 'http://localhost:4004/basic/posts/announcements'
+//const HOST = 'http://localhost:4004/basic/posts/announcements'
 
 const Announcements = () => {
   const [posts,setposts] = useState([]);
   const fetchPosts = async () => {
     try {
-      const response  = await axios.get(HOST);
+      const response  = await axios.get(POST_ROUTES.announcements);
       setposts(response.data.data);
     } catch (error) {
       console.error('Error fetching announcements:', error)

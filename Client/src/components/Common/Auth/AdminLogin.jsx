@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AUTH_ROUTES } from '../db-urls'
 
 
 // Login component handling admin authentication
 const AdminLogin = ({onLogin}) => { // Receive onLogin prop
     const navigate = useNavigate();
-    const Login_HOST = 'http://localhost:4004/auth/admin/login';
+    //const Login_HOST = 'http://localhost:4004/auth/admin/login';
 
     // State management for form fields and error messages
     const [username, setUsername] = useState('');
@@ -22,7 +23,7 @@ const AdminLogin = ({onLogin}) => { // Receive onLogin prop
         }
         console.log(loginData);
         try {
-            const response = await axios.post(Login_HOST, loginData);
+            const response = await axios.post(AUTH_ROUTES.adminLogin, loginData);
             const token = response.data.token
             
             if(!token) {

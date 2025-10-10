@@ -1,5 +1,6 @@
 import React , {useContext, useEffect, useState} from 'react';
 import { UserContext } from './components/UserContext';
+import { UserWidgets } from '../../Common/Widgets/DashboardWidgets';
 
 //view account information
 //delete and update account
@@ -14,13 +15,11 @@ import { UserContext } from './components/UserContext';
   - [] leave site feedback
   - [] view FAQs
   - [] widgets
-      [] current goals
+      [x] current goals
       [] inquiry box
       [] leave feedback on last appt
       [] recent activity (latest promo/announcement)
 */}
-
-const HOST = `http://localhost:4004/basic/users/me`;
 
 const UserDashboard = () => {
   const {user, loading} = useContext(UserContext)
@@ -31,6 +30,7 @@ const UserDashboard = () => {
     <div>
       <h1>User Dashboard</h1>
       <h2>welcome {user.full_name}!</h2>
+      <UserWidgets />
     </div>
   )
 }

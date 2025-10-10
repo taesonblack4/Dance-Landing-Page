@@ -9,6 +9,7 @@ const {
     deleteUser, //delete enrolled user
     createLead, //create lead from contact form
     updateUser, //update enrolled user information
+    updateUserById, // registration controller to update user info by id without token
     getPosts, //fetch posts from admin
     getAnnouncements, //fetch posts with 'announcement' type
     getPromotions, //fetch posts with 'promotion' type
@@ -24,7 +25,7 @@ router.route('/users').get(getUsers).post(createUser);
 
 //if i removed the '/basic' then the user login fails due to missing ID
 router.get('/basic/users/:id', getUser);
-router.get('/users/me', authUser,getMe);
+//router.get('/users/me', authUser,getMe);
 router.get('/users/me/dashboard', authUser, getUserDashbaord);
 router.get('/users/goals', getAllGoals);
 
@@ -40,7 +41,8 @@ router.route('/users/me/goals').all(authUser).get(getMyGoals).post(createGoal);
 
 router.route('/users/me/goals/:goalID').all(authUser).put(updateGoal).delete(deleteGoal);
 
-router.route('/users/:id').put(updateUser).delete(deleteUser);
-
+router.route('/users/register/:id').put(updateUserById);
+// user updates themselves 
+router.route('/users/me').all(authUser).put(updateUser).get(getMe).delete(deleteUser);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from './UserContext'; // Import UserContext to access logged-in user info
 import axios from 'axios';
+import { GOAL_ROUTES } from '../../../Common/db-urls';
 
 const GoalForm = ({goalData, handleChange, onSubmit, onCancel}) => {
     return (
@@ -96,14 +97,14 @@ const GoalsPage = () => {
   // State to track loading status for UI feedback
   const [loading, setLoading] = useState(true);
 
-  const HOST = `http://localhost:4004/basic/users/me/goals`;
+  //const HOST = `http://localhost:4004/basic/users/me/goals`;
 
   const fetchGoals = async () => {
   try {
     const token = localStorage.getItem('accessToken');
     if (!token) throw new Error('No Token');
 
-    const response = await axios.get(HOST, {
+    const response = await axios.get(GOAL_ROUTES.myGoals, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -134,7 +135,7 @@ const GoalsPage = () => {
     }
 
     try {
-      await axios.post(HOST, goalData, {
+      await axios.post(GOAL_ROUTES.myGoals, goalData, {
         headers: {Authorization: `Bearer ${token}`}
       });
       alert('Goal Created');
@@ -152,7 +153,7 @@ const GoalsPage = () => {
   const updateGoal = async (id) => {
     const token = localStorage.getItem('accessToken')
     try {
-      await axios.put(`${HOST}/${id}`, updatedGoal, {
+      await axios.put(GOAL_ROUTES.goalById(id), updatedGoal, {
         headers: {Authorization: `Bearer ${token}`}
       });
       setEditingGoal(null);
@@ -171,7 +172,7 @@ const GoalsPage = () => {
     if(!window.confirm('Delete this Goal?')) return;
 
     try {
-      await axios.delete(`${HOST}/${id}`, {
+      await axios.delete(GOAL_ROUTES.goalById(id), {
         headers: {Authorization: `Bearer ${token}`}
       });
       //refresh list

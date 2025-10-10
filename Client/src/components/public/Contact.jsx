@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 // Import Axios for HTTP requests
 import axios from 'axios';
+import {LEAD_ROUTES} from '../Common/db-urls'
 
 // API endpoint configuration (⚠️ Should use environment variables)
-const HOST = 'http://localhost:4004/basic/leads';
+//const HOST = 'http://localhost:4004/basic/leads';
 
 // ClientForm component handles form submission and state management
 const ClientForm = () => {
@@ -50,7 +51,7 @@ const ClientForm = () => {
     
         try {
             // POST request to backend API
-            const response = await axios.post(HOST, requestData, {
+            const response = await axios.post(LEAD_ROUTES.create, requestData, {
                 headers: { "Content-Type": "application/json" }
             });
     

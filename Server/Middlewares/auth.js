@@ -81,6 +81,8 @@ const authenticate = (allowedRoles = []) => {
       // using synchronous jwt.verify is fine here; wrapping in try/catch below handles errors.
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
+      console.log(decoded);
+
       // keep raw decoded token for debugging/advanced usage
       req.userRaw = decoded;
 

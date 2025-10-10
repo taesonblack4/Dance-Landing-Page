@@ -3,8 +3,10 @@ import axios from 'axios';
 import FilterBar from '../../../Common/Utils/FilterBar';
 import useFilterSort from '../../../Common/Hooks/useFilterSort';
 import SearchBar from '../../../Common/Utils/SearchBar';
+import '../../../../styles/private/Admin/UserGrid.css';
+import {USER_ROUTES, ADMIN_ROUTES} from '../../../Common/db-urls';
 
-const HOST = 'http://localhost:4004/basic/users/';
+//const HOST = 'http://localhost:4004/basic/users/';
 {/*
   - [x] filters (occupation / techniques / experience)
   - [x] sort (date joined)
@@ -12,6 +14,7 @@ const HOST = 'http://localhost:4004/basic/users/';
   - [x] search bar
   - [] change views (table/cells)
 */}
+
 export default function UserGrid() {
   // -----------------------
   // Section: Data Fetching
@@ -24,7 +27,7 @@ export default function UserGrid() {
         const token = localStorage.getItem('accessToken');
         if (!token) return window.location.href = '/admin/login';
 
-        const response = await axios.get(HOST, {
+        const response = await axios.get(USER_ROUTES.all, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(response.data.data);
@@ -62,7 +65,7 @@ export default function UserGrid() {
     if (!user) return null;
   
     return (
-      <div style={styles.panel}>
+      <div className='detail-panel'>
         <button onClick={onClose}>Close</button>
   
         <h2>{user.full_name}</h2>
@@ -107,7 +110,7 @@ export default function UserGrid() {
       const confirmDelete = window.confirm('Delete this user?');
       if(!confirmDelete) return;
 
-      await axios.delete(`${HOST}${id}`);
+      await axios.delete(ADMIN_ROUTES.userById(id));
 
       //remove locally without re-fetch
       setUsers(prev => prev.filter(usr => usr.id !== id))
@@ -149,7 +152,7 @@ export default function UserGrid() {
   // Section: Render JSX
   // --------------------------------
   return (
-    <div style={styles.gridContainer}>
+    <div className='grid-container'>
       
       <div>
         <h2>Count: {filteredData.length}</h2>
@@ -170,7 +173,7 @@ export default function UserGrid() {
       />
 
       {filteredData.map(user => (
-        <div key={user.id} style={styles.card}>
+        <div key={user.id} className="user-card">
           
           {/* Debug help
           
@@ -209,7 +212,8 @@ export default function UserGrid() {
           onSave={async (updatedUser) => {
             try {
               const token = localStorage.getItem('accessToken');
-              await axios.put(`${HOST}${updatedUser.id}`, updatedUser, {
+              //quick fix since the api endpoint has changed and need to name new routes
+              await axios.put(USER_ROUTES.registerById(updatedUser.id), updatedUser, {
                 headers: { Authorization: `Bearer ${token}` }
               });
               setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
@@ -226,34 +230,3 @@ export default function UserGrid() {
   );
 }
 
-const styles = {
-  gridContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '20px',
-    padding: '20px'
-  },
-  card: {
-    background: '#222',
-    color: '#fff',
-    padding: '15px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-    border: '1px solid #444'
-  },
-  panel: {
-    position: 'fixed',
-    top: '10%',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-    zIndex: 1000,
-    width: '400px',
-    maxHeight: '80vh',
-    overflowY: 'auto'
-  }
-};

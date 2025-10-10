@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import {USER_ROUTES} from '../db-urls'
 
 
 const Registration = () => {
     const navigate = useNavigate();
     const routerLocation = useLocation();
     const userId = Number(routerLocation.state?.userId || localStorage.getItem('registeredUserId'));
-    console.log("routerLocation.state: ", routerLocation.state);
-    console.log("userId after fallback:", userId);  
+    //console.log("routerLocation.state: ", routerLocation.state);
+    //console.log("userId after fallback:", userId);  
 
 
-    const HOST = 'http://localhost:4004/basic/users/';
+    //const HOST = 'http://localhost:4004/basic/users/register/';
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -60,8 +61,10 @@ const Registration = () => {
             return;
         }
 
+        console.log(id);
+
         try {
-            const response = await axios.put(`${HOST}${id}`, userData, {
+            const response = await axios.put(USER_ROUTES.registerById(id), userData, {
                 headers: {"Content-Type": "application/json"}
             });
             console.log("User Info Added: ", response.data);

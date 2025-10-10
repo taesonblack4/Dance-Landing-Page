@@ -83,7 +83,8 @@ exports.createUser = async (req,res,next) => {
 };
 
 exports.updateUser = async (req,res) => {
-    const { id } = req.params;
+    const userId = req.userId;
+   
     const { 
         full_name,
         email, 
@@ -97,36 +98,76 @@ exports.updateUser = async (req,res) => {
         technique
     } = req.body;
 
+    const data = {} //only update what new data is passed
+    if(full_name) data.full_name = full_name;
+    if(email) data.email = email;
+    if(phone_number) data.phone_number = phone_number;
+    if(title) data.title = title;
+    if(experience) data.experience = experience;
+    if(location) data.location = location;
+    if(birthday) data.birthday = new Date(birthday);
+    if(age) data.age = age;
+    if(services) data.services = services;
+    if(technique) data.technique = technique;
+
     const user = await prisma.user.update({
-        where: {id: parseInt(id)},
-        data: {
-            full_name,
-            email, 
-            phone_number, 
-            title,
-            experience,
-            location,
-            birthday: new Date(birthday),
-            age, 
-            services, 
-            technique
-        }
+        where: {id: parseInt(userId)},
+        data
     });
 
     res.json(user);
 }
 
+exports.updateUserById = async (req,res) => {
+    const { id } = req.params;
+
+    const { 
+        full_name,
+        email, 
+        phone_number,
+        title,
+        experience,
+        location,
+        birthday,
+        age,
+        services, 
+        technique
+    } = req.body;
+
+    const data = {} //only update what new data is passed
+    if(full_name) data.full_name = full_name;
+    if(email) data.email = email;
+    if(phone_number) data.phone_number = phone_number;
+    if(title) data.title = title;
+    if(experience) data.experience = experience;
+    if(location) data.location = location;
+    if(birthday) data.birthday = new Date(birthday);
+    if(age) data.age = age;
+    if(services) data.services = services;
+    if(technique) data.technique = technique;
+
+    const user = await prisma.user.update({
+        where: {id: parseInt(id)},
+        data
+    });
+
+    res.json(user);
+   
+} 
+
 exports.deleteUser = async (req,res) => {
     try {
-        const {id} = req.params;
+        const userId = req.userId;
         await prisma.user.delete({
-            where: {id: parseInt(id)}
+            where: {id: parseInt(userId)}
         });
-        res.json(`User with ID: ${id} has been deleted`)
+        res.json(`User with ID: ${userId} has been deleted`)
     } catch (error) {
         console.error('error deleting user: ', error);
     }
 };
+
+
 
 exports.createLead = async (req,res) => {
     const { name, 
