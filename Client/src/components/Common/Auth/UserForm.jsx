@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { USER_ROUTES } from '../db-urls'
+
+
 
 //const HOST = `http://localhost:4004/basic/users/me`;
 
@@ -9,107 +11,185 @@ import { USER_ROUTES } from '../db-urls'
 
 
 const UserForm = ({user, onCancel, onSuccess}) => { 
-    //initialize with existing user data
-    const [username, setUserName] = useState(user?.username || '');
-    const [email, setEmail] = useState(user?.email || '');
-    const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || '');
-    const [location, setLocation] = useState(user?.location ||'');
-    const [age, setAge] = useState(user?.age || '');
-    const [occupation, setOccupation] = useState(user?.title || []);
-    const [experience, setExperience] = useState(user?.experience || '');
-    const [techniques, setTechniques] = useState(user?.technique || []);
+  
+  // Initialize with existing user data - use useEffect to handle prop changes
+  const [formData, setFormData] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+    phoneNumber: user?.phone_number || '',
+    location: user?.location || '',
+    age: user?.age || '',
+    occupation: Array.isArray(user?.title) ? user.title : [],
+    experience: user?.experience || '',
+    techniques: Array.isArray(user?.technique) ? user.technique : [],
+  });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Update form data when user prop changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        phoneNumber: user.phone_number || '',
+        location: user.location || '',
+        age: user.age || '',
+        occupation: Array.isArray(user.title) ? user.title : [],
+        experience: user.experience || '',
+        techniques: Array.isArray(user.technique) ? user.technique : [],
+      });
+    }
+  }, [user]);
 
-    //generic input handler for text inputs
-    const handleInputChange = (e,setter) =>{
-      setter(e.target.value); //update state with input value
+  // Generic input handler for text inputs
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleCheckboxChange = (e, field) => {
+    const { checked, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [field]: checked 
+        ? [...prev[field], value] 
+        : prev[field].filter(item => item !== value)
+    }));
+  }
+
+  const cleanArray = (arr) => {
+    return Array.isArray(arr)
+      ? [...new Set(arr.map(item => item?.trim()).filter(Boolean))]
+      : [];
+  };
+
+  // Submit updated user data
+  const updateUser = async () => {
+    const userData = {
+      username: formData.username,
+      email: formData.email,
+      phone_number: formData.phoneNumber,
+      location: formData.location,
+      age: Number(formData.age),
+      title: cleanArray(formData.occupation),
+      experience: formData.experience,
+      technique: cleanArray(formData.techniques)
     }
 
-    const handleCheckboxChange = (e, setter, stateArray) => {
-      const {checked, value} = e.target;
-      // add/remove value from array based on checkbox state
-      checked ? setter([...stateArray, value]) : setter(stateArray.filter(item => item !== value));
-    }
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) throw new Error('No authentication token found');
 
-    // adjust array if issues
-    const cleanArray = (arr) => {
-        return Array.isArray(arr)
-          ? [...new Set(arr.map(item => item?.trim()).filter(Boolean))]
-          : [];
-    };
-
-    const updateUser = async () => {
+      await axios.put(USER_ROUTES.me, userData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
-      const userData = {
-        username,
-        email,
-        phone_number: phoneNumber,
-        location,
-        age: Number(age),
-        title: cleanArray(occupation),
-        experience,
-        technique: cleanArray(techniques)
+      return true;
+    } catch (error) {
+      console.error('Update error: ', error);
+      let errorMessage = 'Error updating profile information';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
+      alert(errorMessage);
+      throw error;
+    }
+  }
 
-      try {
-        const token = localStorage.getItem('accessToken');
-        if(!token) throw new Error('No Token');
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
 
-        await axios.put(USER_ROUTES.me, userData, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        alert('Profile has been successfully updated')
-        onSuccess()//toggle back to view 
-      } catch (error) {
-        console.log('Submission error: ', error);
-        alert('Error updating profile information')
+    setIsSubmitting(true);
+    try {
+      await updateUser();
+      alert('Profile has been successfully updated');
+      
+      // Let the parent component handle the success flow
+      if (onSuccess) {
+        await onSuccess();
       }
+    } catch (error) {
+      // Error already handled in updateUser
+      console.error('Submission failed:', error);
+    } finally {
+      setIsSubmitting(false);
     }
+  }
 
-    const onSubmit = (e) => {
-      e.preventDefault();
-      updateUser();
-    }
-
-    return (
-    <>
+  return (
     <form onSubmit={onSubmit}>
-
       {/* Username Input */}
       <div className='input-group'>
         <label>Username</label>
-        <input type='text' value={username} onChange={(e) => handleInputChange(e, setUserName)}/>
+        <input 
+          type='text' 
+          name="username"
+          value={formData.username} 
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* Email Input */}
       <div className='input-group'>
         <label>Email</label>
-        <input type='email' value={email} onChange={(e) => handleInputChange(e, setEmail)}/>
+        <input 
+          type='email' 
+          name="email"
+          value={formData.email} 
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* Phone# Input */} 
       <div className='input-group'>
         <label>Phone Number</label>
-        <input type='tel' value={phoneNumber} onChange={(e) => handleInputChange(e, setPhoneNumber)}/>
+        <input 
+          type='tel' 
+          name="phoneNumber"
+          value={formData.phoneNumber} 
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* Location Input */}
       <div className='input-group'>
         <label>Location</label>
-        <input type='text' value={location} onChange={(e) => handleInputChange(e, setLocation)}/>
+        <input 
+          type='text' 
+          name="location"
+          value={formData.location} 
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* Age Input */}
       <div className='input-group'>
         <label>Age</label>
-        <input type='number' value={age} onChange={(e) => handleInputChange(e, setAge)}/>
+        <input 
+          type='number' 
+          name="age"
+          value={formData.age} 
+          onChange={handleInputChange}
+        />
       </div>
 
       {/* Experience Select Group */}
       <div className='input-group'>
         <label>Experience</label>
-        <select name="experience" id="experience" value={experience} onChange={(e) => setExperience(e.target.value)}>
+        <select 
+          name="experience" 
+          value={formData.experience} 
+          onChange={handleInputChange}
+        >
           <option value="Beginner">Beginner</option>
           <option value="Intermediate">Intermediate</option>
           <option value="Advanced">Advanced</option>
@@ -121,9 +201,14 @@ const UserForm = ({user, onCancel, onSuccess}) => {
       <div className='checkbox-group'>
         <label>Occupation</label>
         <div className='checkbox-items'>
-          {['Student', 'Instructor', 'Choreographer', 'Administrator', 'Performer'].map((title,index) => (
+          {['Student', 'Instructor', 'Choreographer', 'Administrator', 'Performer'].map((title, index) => (
             <label key={index} className='checkbox-label'>
-              <input type="checkbox" value={title} checked={occupation.includes(title)} onChange={(e)=> handleCheckboxChange(e, setOccupation, occupation)}/>
+              <input 
+                type="checkbox" 
+                value={title} 
+                checked={formData.occupation.includes(title)} 
+                onChange={(e) => handleCheckboxChange(e, 'occupation')}
+              />
               {title}
             </label>
           ))}
@@ -133,21 +218,29 @@ const UserForm = ({user, onCancel, onSuccess}) => {
       {/* Technique Checkbox Group */}
       <div className='checkbox-group'>
         <label>Technique</label>
-          <div className='checkbox-items'>
-            {['Hip Hop', 'Jazz', 'Modern', 'Ballet', 'Contemporary'].map((technique, index) => (
-              <label key={index} className='checkbox-label'>
-                <input type="checkbox" value={technique} checked={techniques.includes(technique)} onChange={(e) => handleCheckboxChange(e, setTechniques, techniques)} />
-                {technique}
-              </label>
-            ))}
-          </div>
+        <div className='checkbox-items'>
+          {['Hip Hop', 'Jazz', 'Modern', 'Ballet', 'Contemporary'].map((technique, index) => (
+            <label key={index} className='checkbox-label'>
+              <input 
+                type="checkbox" 
+                value={technique} 
+                checked={formData.techniques.includes(technique)} 
+                onChange={(e) => handleCheckboxChange(e, 'techniques')}
+              />
+              {technique}
+            </label>
+          ))}
+        </div>
       </div>
 
-      <button type='submit'>Save</button>
-      <button type='button' onClick={onCancel}>Cancel</button>
+      <button type='submit' disabled={isSubmitting}>
+        {isSubmitting ? 'Saving...' : 'Save'}
+      </button>
+      <button type='button' onClick={onCancel} disabled={isSubmitting}>
+        Cancel
+      </button>
     </form>
-    </>
   )
 }
 
-export default UserForm
+export default UserForm;

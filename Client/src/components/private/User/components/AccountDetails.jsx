@@ -1,52 +1,63 @@
 
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import { UserContext } from './UserContext';
 import UserForm from '../../../Common/Auth/UserForm';
 import axios from 'axios';
 import {USER_ROUTES} from '../../../Common/db-urls';
-
-
 {/*
   - [x] edit account info 
   - [] reset password
   - [x] delete account
 */}
+
 // update user info happens after refresh
 const AccountDetails = () => {
-  const {user, loading} = useContext(UserContext);
-
+  const {user, loading, setUser, fetchUser} = useContext(UserContext);
   if(loading) return <p>Loading account details...</p>
   if(!user) return <p>Unable to load user...</p>;
-
   //const [activeView, setActiveView] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
   console.log("User in AccountDetails:", user);
 
+  //delete user account
   const deleteUser = async (id) => {
-    if(!id) {
-      alert('No user ID found for deletion');
-      return;
-    }
     try {
+
       const confirmDelete = window.confirm('Are you sure you want to delete your account?');
       if(!confirmDelete) return;
+
       const token = localStorage.getItem('accessToken');
       if(!token) {
         alert('No access token found. Please log in again.');
         return;
       }
-      alert
+
       await axios.delete(USER_ROUTES.me, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      // Optionally, you might want to log the user out or redirect after deletion
+      
       alert('Account deleted successfully');
+      localStorage.removeItem('accessToken');
+      setUser(null); // Clear user context immediately
+      localStorage.clear();
+      window.location.href = '/user-login';
     } catch (error) {
       console.error('Error deleting account:', error);
       alert('Failed to delete account. Please try again later.');
+    }
+  }
+
+  const handleUpdateSuccess = async () => {
+    try {
+      // Use the context's fetchUser to ensure consistent state
+      await fetchUser();
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error refreshing user after update:', error);
+      alert('Profile updated but there was an error refreshing the data');
     }
   }
 
@@ -79,13 +90,13 @@ const AccountDetails = () => {
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
         </div>
       ) : (
-        <UserForm user={user} 
+        <UserForm 
+        user={user} 
         onCancel={() => setIsEditing(false)}
-        onSuccess={() => setIsEditing(false)} />
+        onSuccess={handleUpdateSuccess} 
+        />
       )}
-      {/* Future Features */}
-      {/* <button onClick={() => setActiveView('resetPassword')}>Reset Password</button>
-      <button onClick={() => setActiveView('deleteAccount')}>Delete Account</button> */}
+      
       <button>Reset Password</button>
       <button onClick={()=> deleteUser(user.id)}>Delete Account</button>
       </>
