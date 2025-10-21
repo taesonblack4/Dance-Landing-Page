@@ -15,40 +15,50 @@ import React, {createContext,useState,useEffect } from 'react'
 import axios from 'axios';
 import {USER_ROUTES} from '../../../Common/db-urls';
 
-//const HOST = `http://localhost:4004/basic/users/me`;
 
 export const UserContext = createContext({
     user: null,
     loading: true,
+    setUser: () => {},
+    fetchUser: async () => {}
 });
 
 export function UserProvider({children}) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function loadUser() {
-            try {
-                const token = localStorage.getItem('accessToken');
-                if(!token) throw new Error('No Token');
+    //function to fetch user data
+    const fetchUser = async () => {
 
-                const {data} = await axios.get(USER_ROUTES.me, {
-                    headers: {Authorization: `Bearer ${token}`}
-                });
-                console.log(data)
-                setUser(data);
-            } catch (error) {
-                console.error('Failed to fetch user: ', error);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
+        setLoading(true);
+
+        const token = localStorage.getItem('accessToken');
+        
+        if(!token) {
+            setUser(null);
+            setLoading(false);
+            return;
         }
-        loadUser();
+        try {
+            const {data} = await axios.get(USER_ROUTES.me, {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+            setUser(data);
+        } catch (error) {
+            console.error('Failed to fetch user: ', error);
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //fetch user on mount
+    useEffect(() => {
+        fetchUser();
     },[]);
 
     return (
-        <UserContext.Provider value={{user, loading}} >
+        <UserContext.Provider value={{user, setUser, loading, fetchUser}} >
             {children}
         </UserContext.Provider>
     );
