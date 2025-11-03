@@ -375,4 +375,44 @@ exports.getUserDashbaord = async (req,res) => {
         console.error('error fetching User Dashboard:', error);
         res.status(500).json({success:false, message: 'Failed to load Dashboard', error: error.message})
     }
-}
+};
+
+exports.resetPassword = async (req,res) => {
+    try {
+        const userId = req.userId;
+        if(!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthenticated' });
+        }
+
+        const { newPassword , currentPassword } = req.body;
+        if(!newPassword || !currentPassword) {
+            return res.status(400).json({ success: false, message: 'Missing passwords' });
+        }
+
+        //get user from JWT 
+        const user = await prisma.user.findUnique({
+            where: { id: parseInt(userId) }
+        });
+        if(!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+        if(!passwordMatch) {
+            return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+        }
+
+        await prisma.user.update({
+            where: { id: parseInt(userId) },
+            data: { password: hashedPassword }
+        });
+
+        res.json({ success: true, message: 'Password reset successfully' });
+
+    } catch (error) {
+        console.error('error resetting password: ', error);
+        res.status(500).json({ success: false, message: 'Error resetting password' });
+    }
+};

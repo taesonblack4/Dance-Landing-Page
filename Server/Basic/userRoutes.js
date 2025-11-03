@@ -18,7 +18,8 @@ const {
     getMyGoals, //fetch goals from signedin user
     updateGoal, //update goal from enrolled user
     deleteGoal, //delete goal from enrolled user
-    getUserDashbaord //user dashbaord data 
+    getUserDashbaord, //user dashbaord data 
+    resetPassword // reset password controller
 } = require('./userControllers');
 
 router.route('/users').get(getUsers).post(createUser);
@@ -44,5 +45,7 @@ router.route('/users/me/goals/:goalID').all(authUser).put(updateGoal).delete(del
 router.route('/users/register/:id').put(updateUserById);
 // user updates themselves 
 router.route('/users/me').all(authUser).put(updateUser).get(getMe).delete(deleteUser);
+
+router.route('/users/me/reset-password').all(authUser).put(resetPassword);
 
 module.exports = router;
