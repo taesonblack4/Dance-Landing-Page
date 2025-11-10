@@ -1,12 +1,13 @@
 
-import React, {useState, useContext} from 'react';
+import {useState, useContext} from 'react';
 import { UserContext } from './UserContext';
 import UserForm from '../../../Common/Auth/UserForm';
 import axios from 'axios';
 import {USER_ROUTES} from '../../../Common/db-urls';
+import ResetPassword from '../../../Common/Auth/ResetPassword';
 {/*
   - [x] edit account info 
-  - [] reset password
+  - [x] reset password
   - [x] delete account
 */}
 
@@ -17,6 +18,7 @@ const AccountDetails = () => {
   if(!user) return <p>Unable to load user...</p>;
   //const [activeView, setActiveView] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   console.log("User in AccountDetails:", user);
 
@@ -68,6 +70,7 @@ const AccountDetails = () => {
       {!isEditing ? (
         <div>
           <h2>Welcome, {user.username}</h2>
+          <p>password: {user.password}</p>
           <p>Email: {user.email}</p>
           <p>Name: {user.full_name}</p>
           <p>Phone #: {user.phone_number}</p>
@@ -97,7 +100,10 @@ const AccountDetails = () => {
         />
       )}
       
-      <button>Reset Password</button>
+      <button onClick={() => setShowResetPassword(!showResetPassword)}>
+        {showResetPassword ? 'Cancel Reset' : 'Reset Password'}
+      </button>
+      {showResetPassword && <ResetPassword onSuccess={() => setShowResetPassword(false)} />}
       <button onClick={()=> deleteUser(user.id)}>Delete Account</button>
       </>
     </div>

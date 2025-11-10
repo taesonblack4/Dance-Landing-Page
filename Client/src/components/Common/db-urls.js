@@ -22,6 +22,7 @@ export const USER_ROUTES = {
     all: `${baseurl}/basic/users`, // GET all users / POST create user
     me: `${baseurl}/basic/users/me`, // GET/PUT/DELETE signed-in user
     myDashboard: `${baseurl}/basic/users/me/dashboard`, // GET signed-in user dashboard data
+    resetPassword: `${baseurl}/basic/users/me/reset-password`, // PUT reset password for signed-in user
     userById: (id) => `${baseurl}/basic/users/${id}`, // GET user by ID passed through param
     registerById: (id) => `${baseurl}/basic/users/register/${id}`, // PUT user registration by ID without token
 }

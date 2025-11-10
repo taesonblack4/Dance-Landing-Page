@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AUTH_ROUTES } from '../db-urls';
+import { AUTH_ROUTES, USER_ROUTES} from '../db-urls';
 
 
 // Login component handling admin authentication
@@ -30,7 +30,7 @@ const UserLogin = ({onLogin}) => {
                 const token = response.data.token;
                 localStorage.setItem("accessToken", token); // assuming token is returned
                 // Fetch the correct user immediately
-                const userRes = await axios.get('http://localhost:4004/basic/users/me', {
+                const userRes = await axios.get(USER_ROUTES.me, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
